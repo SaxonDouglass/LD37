@@ -47,10 +47,10 @@ var actor = function (spec) {
       that.shield = that.shield - shieldAmount;
     
       if (that.shield < 0) {
-        logger.log(that.name  + "'s shield depleted");
+        log.print(that.name  + "'s shield depleted");
         that.shield = 0;
       } else {
-        logger.log(that.name + "'s shield reduced to " + parseFloat(that.shield * 100.0 / spec.blueprint.shield).toFixed(1) + "%");
+        log.print(that.name + "'s shield reduced to " + parseFloat(that.shield * 100.0 / spec.blueprint.shield).toFixed(1) + "%");
       }
     }
 
@@ -65,14 +65,14 @@ var actor = function (spec) {
 
       let newAmount = Math.max(0, residualAmount - armour);
       if (newAmount < residualAmount) {
-        logger.log(parseInt(amount - newAmount) + " damage absorbed by " + that.name + "'s armour");
+        log.print(parseInt(amount - newAmount) + " damage absorbed by " + that.name + "'s armour");
         residualAmount = newAmount;
       }
       that.integrity -= residualAmount;
       if (that.isDestroyed()) {
-        logger.log(that.name + "'s hull destroyed");
+        log.print(that.name + "'s hull destroyed");
       } else {
-        logger.log(that.name + "'s hull integrity reduced to " + parseFloat(that.integrity * 100.0 / spec.blueprint.integrity).toFixed(1) + "%");
+        log.print(that.name + "'s hull integrity reduced to " + parseFloat(that.integrity * 100.0 / spec.blueprint.integrity).toFixed(1) + "%");
       }
     }
     return that;
@@ -170,7 +170,7 @@ var actor = function (spec) {
 
       let newShield = Math.min(that.shield + that.shieldRecharge(), spec.blueprint.shield);
       if (newShield > that.shield) {
-        logger.log(that.name + "'s shield recharged to " + parseFloat(newShield * 100.0 / spec.blueprint.shield).toFixed(1) + "%");
+        log.print(that.name + "'s shield recharged to " + parseFloat(newShield * 100.0 / spec.blueprint.shield).toFixed(1) + "%");
         that.shield = newShield;
       }
 
@@ -192,7 +192,7 @@ var actor = function (spec) {
       let idx = that.statusEffects.indexOf(effect);
       if (idx < 0) {
         if (effect.addLog) {
-          logger.log(effect.addLog, tags);
+          log.print(effect.addLog, tags);
         }
         that.statusEffects.push(effect);
         statusDurations.push(duration);
@@ -206,7 +206,7 @@ var actor = function (spec) {
       let idx = that.statusEffects.indexOf(effect);
       if (idx >= 0) {
         if (effect.removeLog) {
-          logger.log(effect.removeLog, tags);
+          log.print(effect.removeLog, tags);
         }
         that.statusEffects.splice(idx, 1);
       }
