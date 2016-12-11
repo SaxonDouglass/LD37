@@ -38,6 +38,8 @@ var actor = function (spec) {
     for (let effect of them.statusEffects) {
       [shieldAmount, residualAmount] = effect.damageThem(them, that, move, shieldAmount, residualAmount)
     }
+
+    [shieldAmount, residualAmount] = move.type.damage(them, that, move, shieldAmount, residualAmount)
     
     for (let effect of that.statusEffects) {
       [shieldAmount, residualAmount] = effect.damageMe(that, them, move, shieldAmount, residualAmount)
@@ -57,10 +59,11 @@ var actor = function (spec) {
     if (residualAmount > 0) {
       let armour = spec.blueprint.armour;
       for (let effect of them.statusEffects) {
-        armour = effect.armourThem(them, that, move, armour)
+        armour = effect.armourThem(them, that, move, armour);
       }
+      armour = move.type.armour(them, that, move, armour);
       for (let effect of that.statusEffects) {
-        armour = effect.armourMe(that, them, move, armour)
+        armour = effect.armourMe(that, them, move, armour);
       }
 
       let newAmount = Math.max(0, residualAmount - armour);

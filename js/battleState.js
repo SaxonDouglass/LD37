@@ -45,6 +45,7 @@ var logger = function (spec) {
       }
       return match;
     });
+    console.log(str)
     if (contents.length > 0) contents += "\n";
     contents += str;
     contents = contents.replace(/(#[a-fA-F0-9]{6}){([^}]+)}/g, function(match, p0, p1, offset) {
@@ -113,6 +114,7 @@ var battleState = {
               targeted: true,
               supply: 1,
               time: 1,
+              type: physicalDamage,
             })
           }),
           
@@ -150,7 +152,8 @@ var battleState = {
               log: "{me} attacks {target} with a finishing move for {damage} damage",
               targeted: true,
               supply: 10,
-              time: 1
+              time: 1,
+              type: armourPiercingDamage,
             })
           }),
           trigger({
@@ -167,6 +170,7 @@ var battleState = {
               targeted: true,
               supply: 1,
               time: 1,
+              type: physicalDamage,
             })
           })
         ]
@@ -203,7 +207,8 @@ var battleState = {
               log: "{me} attacks {target} with a finishing move for {damage} damage",
               targeted: true,
               supply: 10,
-              time: 1
+              time: 1,
+              type: armourPiercingDamage,
             })
           }),
           trigger({
@@ -220,6 +225,7 @@ var battleState = {
               targeted: true,
               supply: 1,
               time: 1,
+              type: physicalDamage,
             })
           })
         ]
@@ -256,7 +262,8 @@ var battleState = {
               log: "{me} attacks {target} with a finishing move for {damage} damage",
               targeted: true,
               supply: 10,
-              time: 1
+              time: 1,
+              type: armourPiercingDamage,
             })
           }),
           trigger({
@@ -273,6 +280,7 @@ var battleState = {
               targeted: true,
               supply: 1,
               time: 1,
+              type: physicalDamage,
             })
           })
         ]

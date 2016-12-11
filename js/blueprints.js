@@ -63,6 +63,33 @@ var component = function (spec) {
   return that;
 };
 
+var damageType = function (spec) {
+  var that = {};
+
+  that.name = spec.name;
+  that.parentType = spec.parentType || null;
+
+  that.armour = spec.armour || function(me, them, move, effectiveArmour) {
+    return effectiveArmour;
+  };
+
+  that.damage = spec.damage || function(me, them, move, shieldDamage, residualDamage) {
+    return [shieldDamage, residualDamage];
+  };
+
+  that.isType = function (type) {
+    if (that === type) {
+      return true
+    } 
+    if (!that.parentType) {
+      return false
+    }
+    return that.parentType.isType(type)
+  }
+
+  return that;
+}
+
 var move = function (spec) {
   var validTarget, eachTarget, once, that = {};
 
@@ -78,6 +105,7 @@ var move = function (spec) {
   that.baseDamage = spec.damage || 0; 
   that.baseRepair = spec.reapir || 0; 
   that.targeted = !(spec.targeted === false);
+  that.type = spec.type || physicalDamage;
   that.self = spec.self === true;
   
   that.run = function (me, world, targets) {
@@ -215,6 +243,26 @@ var robotBlueprint = function (spec) {
   return that;
 };
 
+var physicalDamage = damageType({
+  name: "Physical",
+});
+
+var armourPiercingDamage = damageType({
+  name: "Armour Piercing",
+  parentType: physicalDamage,
+  armour: function (me, them, move, effectiveArmour) {
+    return Math.max(0, effectiveArmour - 10);
+  },
+});
+
+var fireDamage = damageType({
+  name: "Fire",
+});
+
+var laserDamage = damageType({
+  name: "Laser",
+});
+
 var head = slot({
   name: "Head",
 });
@@ -280,6 +328,7 @@ var headLaser = component({
       log: "{me} fires a head-mounted laser blast at {target} for {damage} damage",
       targeted: true,
       time: 1,
+      type: laserDamage,
     }),
   ],
   slot: head,
@@ -321,6 +370,7 @@ var sword = component({
       log: "{me} hits {target} with a sword for {damage} damage",
       targeted: true,
       time: 2,
+      type: physicalDamage,
     }),
   ],
   slot: arm,
@@ -338,6 +388,7 @@ var railgun = component({
       supply: 10,
       targeted: true,
       time: 2,
+      type: armourPiercingDamage,
     }),
   ],
   slot: arm,
@@ -355,6 +406,7 @@ var flamethrower = component({
       supply: 10,
       targeted: false,
       time: 2,
+      type: fireDamage,
     }),
   ],
   slot: arm,
