@@ -112,7 +112,7 @@ var move = function (spec) {
       repair: spec.repair,
     };
 
-    logger.log(spec.log, tags)
+    log.print(spec.log, tags)
     for (let target of validTargets) {
       if (spec.damage) {
         target.damage(spec.damage);
@@ -126,11 +126,11 @@ var move = function (spec) {
     once(me, world, validTargets);
 
     me.heat -= spec.heat || 0;
-    if (spec.heat && spec.heat > 0) logger.log("{me}'s heat reduced to " + me.heat, tags);
+    if (spec.heat && spec.heat > 0) log.print("{me}'s heat reduced to " + me.heat, tags);
     me.supply -= spec.supply || 0;
-    if (spec.supply && spec.supply > 0) logger.log("{me}'s supply reduced to " + me.supply, tags);
+    if (spec.supply && spec.supply > 0) log.print("{me}'s supply reduced to " + me.supply, tags);
 
-    logger.log(spec.time);
+    log.print(spec.time);
     return spec.time;
   };
   

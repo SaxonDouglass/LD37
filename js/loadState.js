@@ -5,6 +5,7 @@ var loadState = {
     game.scale.parentIsWindow = true;
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     
+    game.load.image("log", "assets/log.png");
     game.load.image("stats_bar_fill", "assets/stats_bar_fill.png");
     game.load.image("stats_bar_frame", "assets/stats_bar_frame.png");
     
