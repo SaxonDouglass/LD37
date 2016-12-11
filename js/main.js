@@ -10,7 +10,7 @@ game.state.add("battle", battleState);
 // game.state.add("campaignReport", campaignReportState);
 
 var logger = {
-  log: console.log
+  log: console.log.bind(console)
 };
 
 var blueprint = function (spec) {
@@ -24,7 +24,9 @@ var blueprint = function (spec) {
   that.supply = spec.supply;
   that.armour = spec.armour;
 
-  that.update = function () {};
+  that.update = function () {
+    return that;
+  };
 
   return that;
 };
@@ -166,6 +168,7 @@ var behaviour = function (spec) {
         return time;
       }
     }
+    return null;
   };
   
   return that;
@@ -183,15 +186,17 @@ var actor = function (spec) {
   that.act = function (world) {
     var time = spec.behaviour.run(that, world);
     that.advance(time);
+    return that;
   };
   
   that.advance = function (time) {
     tick += time;
+    return that;
   };
   
   that.damage = function (amount) {
     if (that.isDestroyed()) {
-      return;
+      return that;
     }
     
     that.shield -= amount;
@@ -214,6 +219,8 @@ var actor = function (spec) {
     } else if (amount > 0) {
       logger.log(that.name + "'s shield reduced to " + parseFloat(that.shield * 100.0 / spec.blueprint.shield).toFixed(1) + "%");
     }
+
+    return that;
   };
   
   that.isDestroyed = function () {
@@ -240,6 +247,7 @@ var actor = function (spec) {
     tick = 0;
     that.heat = spec.blueprint.heat;
     that.shield = spec.blueprint.shield;
+    return that;
   };
   
   that.speed = function () {
@@ -251,8 +259,9 @@ var actor = function (spec) {
       that.heat = Math.min(that.heat + spec.blueprint.heatSink, spec.blueprint.heat);
       that.shield = Math.min(that.shield + spec.blueprint.shieldRecharge, spec.blueprint.shield);
       logger.log(that.name + "'s shield recharged to " + parseFloat(that.shield * 100.0 / spec.blueprint.shield).toFixed(1) + "%");
+      spec.blueprint.update(that);
     }
-    spec.blueprint.update(that);
+    return that;
   };
   
   return that;
