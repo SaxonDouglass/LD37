@@ -75,7 +75,8 @@ var move = function (spec) {
 
   that.name = spec.name;
   that.description = spec.description;
-  
+  that.baseDamage = spec.damage || 0; 
+  that.baseRepair = spec.reapir || 0; 
   that.targeted = !(spec.targeted === false);
   that.self = spec.self === true;
   
@@ -95,7 +96,21 @@ var move = function (spec) {
     let validTargets = [];
     for (let target of targets) {
       if (validTarget(me, world, target)) {
-        validTargets.push(target);
+        let valid = true;
+        for (let effect of me.statusEffects) {
+          if (!effect.canTargetThem(me, target, that)) {
+            valid = false;
+            break
+          }
+        }
+        if (!valid) continue;
+        for (let effect of target.statusEffects) {
+          if (!effect.canTargetMe(target, me, that)) {
+            valid = false;
+            break
+          }
+        }
+        if (valid) validTargets.push(target);
       }
     }
 
@@ -115,10 +130,18 @@ var move = function (spec) {
     log.print(spec.log, tags)
     for (let target of validTargets) {
       if (spec.damage) {
-        target.damage(spec.damage);
+        target.damage(spec.damage, me, that);
       }
       if (spec.repair) {
-        target.integrity = Math.min(target.integrity + spec.repair, Math.max(target.integrity, target.maxIntegrity()));
+        let repair = spec.repair;
+        for (let effect of me.statusEffects) {
+          repair = effect.repairThem(me, target, that, repair);
+        }
+        for (let effect of target.statusEffects) {
+          repair = effect.repairMe(target, me, that, repair);
+        }
+
+        target.integrity = Math.min(target.integrity + repair, Math.max(target.integrity, target.maxIntegrity()));
       }
       eachTarget(me, world, target);
     }

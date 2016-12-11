@@ -479,7 +479,7 @@ var battleState = {
         if (actor.isReady(world)) {
           actor.act(world);
         }
-        actor.update();
+        actor.update(world.tick);
       }
       world.tick++;
     }
