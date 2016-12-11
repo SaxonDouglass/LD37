@@ -1,6 +1,4 @@
 
-
-
 var blueprintState = {
   create: function () {
     // Robot tabs on left-side
