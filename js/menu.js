@@ -5,6 +5,6 @@ var menuState = {
   },
   
   create: function () {
-    game.state.start("battle");
+    game.state.start("blueprint");
   }
 };
