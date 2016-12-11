@@ -14,12 +14,18 @@ var battleState = {
             targets: target({
               allies: true,
             }),
-            action: repair({
+            action: move({
               name: "Repair",
-              amount: 50,
+              description: "Repairs up to {repair} integrity damage.",
               heat: 10,
+              log: "{me} repairs {target} for {repair} integrity",
+              repair: 50,
               supply: 10,
-              time: 2
+              targeted: true,
+              time: 2,
+              validTarget: function (me, world, target) {
+                return !target.isDestroyed() && target.integrity < target.maxIntegrity();
+              },
             })
           }),
           trigger({
@@ -31,12 +37,15 @@ var battleState = {
             targets: target({
               allies: false,
             }),
-            action: attack({
+            action: move({
               name: "Punch",
-              amount: 30,
+              damage: 30,
+              description: "Deals {damage} damage to target.",
               heat: 30,
+              log: "{me} punches {target} for {damage} damage",
+              targeted: true,
               supply: 1,
-              time: 1
+              time: 1,
             })
           }),
           
@@ -66,10 +75,13 @@ var battleState = {
             targets: target({
               allies: false,
             }),
-            action: attack({
+            action: move({
               name: "Finisher",
-              amount: 50,
+              damage: 50,
+              description: "Deals {damage} damage to target.",
               heat: 40,
+              log: "{me} attacks {target} with a finishing move for {damage} damage",
+              targeted: true,
               supply: 10,
               time: 1
             })
@@ -83,12 +95,15 @@ var battleState = {
             targets: target({
               allies: false,
             }),
-            action: attack({
+            action: move({
               name: "Claw",
-              amount: 30,
+              damage: 30,
+              description: "Deals {damage} damage to target.",
               heat: 20,
+              log: "{me} claws {target} for {damage} damage",
+              targeted: true,
               supply: 1,
-              time: 1
+              time: 1,
             })
           })
         ]

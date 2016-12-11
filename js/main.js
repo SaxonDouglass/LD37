@@ -10,25 +10,17 @@ game.state.add("battle", battleState);
 // game.state.add("campaignReport", campaignReportState);
 
 var logger = {
-  log: console.log.bind(console)
-};
-
-var blueprint = function (spec) {
-  var that = {};
-  
-  that.integrity = spec.integrity;
-  that.heat = spec.heat;
-  that.heatSink = spec.heatSink;
-  that.shield = spec.shield;
-  that.shieldRecharge = spec.shieldRecharge;
-  that.supply = spec.supply;
-  that.armour = spec.armour;
-
-  that.update = function () {
-    return that;
-  };
-
-  return that;
+  log: function (message, tags) {
+    console.log(String(message).replace(/{([^}]+)}/g, function(match, key) {
+      if (tags && tags.hasOwnProperty(key)) {
+        return tags[key];
+      }
+      if (key === "{") {
+        return key;
+      }
+      return match;
+    }));
+  },
 };
 
 var condition = function (spec) {
@@ -67,70 +59,6 @@ var target = function (spec) {
     return targets;
   };
   
-  return that;
-};
-
-var action = function (spec, my) {
-  my = my || {};
-  
-  var that = {};
-  that.name = spec.name;
-  
-  that.targeted = !(spec.targeted === false);
-  
-  that.run = function (that, world, targets) {
-    let time = null;
-    for (let target of targets) {
-      if (spec.amount) {
-        if (my.run(that, target)) {
-          time = spec.time;
-        }
-      }
-    };
-    if (time) {
-      that.heat -= spec.heat || 0;
-      if (spec.heat > 0) logger.log(that.name + "'s heat reduced to " + that.heat);
-      that.supply -= spec.supply || 0;
-      if (spec.supply > 0) logger.log(that.name + "'s supply reduced to " + that.supply);
-    }
-    return time;
-  };
-  
-  return that;
-};
-
-var attack = function (spec, my) {
-  my = my || {};
-  
-  my.run = function(that, target) {
-    if (!that.isDestroyed()) {
-      logger.log(that.name + " attacks " + target.name + " with " + spec.name + " for " + spec.amount + " damage.");
-      target.damage(spec.amount);
-      return true;
-    }
-    return false;
-  };
-  
-  var that = action(spec, my);
-  
-  return that;
-};
-
-var repair = function (spec, my) {
-  my = my || {};
-  
-  my.run = function(that, target) {
-    let newIntegrity = Math.min(target.integrity + spec.amount, target.maxIntegrity());
-    if (!that.isDestroyed() && newIntegrity > target.integrity) {
-      logger.log(that.name + " repairs " + target.name + " with " + spec.name + " for " + spec.amount + " damage.");
-      target.integrity = newIntegrity;
-      return true;
-    }
-    return false;
-  }
-  
-  var that = action(spec, my);
-    
   return that;
 };
 
