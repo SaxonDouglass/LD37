@@ -84,7 +84,7 @@ var blueprintState = {
       this.group_parts[i].x = 256;
       this.group_parts[i].y = 128;
       
-      this.group_parts[i].visible = (i === 0);
+      this.group_parts[i].visible = i === 0;
     };
     
     // Statistics panel top right

@@ -102,6 +102,7 @@ var move = function (spec) {
   eachTarget = spec.eachTarget || function (me, world, target) {};
   once = spec.once || function (me, world, targets) {};
 
+  that.id = spec.id;
   that.name = spec.name;
   that.description = spec.description;
   that.baseDamage = spec.damage || 0; 

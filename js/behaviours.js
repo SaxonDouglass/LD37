@@ -4,6 +4,8 @@ var condition = function (spec) {
   that.check = function (that, world, target) {
     return true;
   };
+  that.id = spec.id;
+  that.name = spec.name || "Generic condition";
 
   return that;
 };
@@ -61,6 +63,8 @@ var target = function (spec) {
     }
     return targets;
   };
+  that.id = spec.id;
+  that.name = spec.name || "Generic target";
   
   return that;
 };
@@ -90,16 +94,19 @@ var sortedTarget = function (spec) {
 
 var trigger = function (spec) {
   var that = {};
+  that.condition = spec.condition;
+  that.action = spec.action;
+  that.targets = spec.targets;
   
   that.evaluate = function (that, world) {
-    let targets = spec.targets.all(that, world);
+    let targets = that.targets.all(that, world);
     for (let target of targets) {
-      if (spec.condition.check(that, world, target)) {
+      if (that.condition.check(that, world, target)) {
         let time;
-        if (spec.action.targeted) {
-          time = spec.action.run(that, world, [target]);
+        if (that.action.targeted) {
+          time = that.action.run(that, world, [target]);
         } else {
-          time = spec.action.run(that, world, targets);
+          time = that.action.run(that, world, targets);
         }
         if (time !== null) {
           return time;
@@ -114,6 +121,7 @@ var trigger = function (spec) {
 
 var behaviour = function (spec) {
   var that = {};
+  that.triggers = spec.triggers;
   
   that.run = function (that, world) {
     for (let trigger of spec.triggers) {

@@ -36,9 +36,14 @@ world.chassis = {
 };
 
 world.conditions = {
-  any: condition({}),
+  any: condition({
+    id: "any",
+    name: "Any"
+  }),
   
   integrityLT50: compareCondition({
+    id: "integrityLT50",
+    name: "Integrity < 50%",
     property: "integrity",
     value: 50,
     lessThan: true
@@ -47,10 +52,14 @@ world.conditions = {
 
 world.targets = {
   allyAny: target({
-    allies: true,
+    id: "allyAny",
+    name: "Ally: any",
+    allies: true
   }),
   
   foeLeastIntegrity: sortedTarget({
+    id: "foeLeastIntegrity",
+    name: "Foe: least integrity",
     allies: false,
     property: "integrity",
     lowest: true,
@@ -59,6 +68,7 @@ world.targets = {
 
 world.moves = {
   bash: move({
+    id: "bash",
     name: "Bash",
     damage: 20,
     description: "Deals {damage} damage to target.",
@@ -71,6 +81,7 @@ world.moves = {
   }),
   
   repair: move({
+    id: "repair",
     name: "Repair",
     description: "Repairs up to {repair} integrity damage.",
     heat: 30,
@@ -85,6 +96,7 @@ world.moves = {
   }),
   
   finisher: move({
+    id: "finisher",
     name: "Finisher",
     damage: 50,
     description: "Deals {damage} damage to target.",
@@ -97,6 +109,7 @@ world.moves = {
   }),
   
   claw: move({
+    id: "claw",
     name: "Claw",
     damage: 30,
     description: "Deals {damage} damage to target.",
@@ -109,6 +122,7 @@ world.moves = {
   }),
   
   ventCoolant: move({
+    id: "ventCoolant",
     name: "Vent coolant",
     description: "Cools self by 100 heat",
     heat: -100,
@@ -118,6 +132,7 @@ world.moves = {
   }),
   
   laserBlast: move({
+    id: "laserBlast",
     name: "Laser blast",
     damage: 20,
     description: "Deals 20 damage to target.",
@@ -129,6 +144,7 @@ world.moves = {
   }),
   
   overchargeShields: move({
+    id: "overchargeShields",
     name: "Overcharge shields",
     description: "Increases current shields by 50. Can go above max shields.",
     heat: 50,
@@ -141,6 +157,7 @@ world.moves = {
   }),
   
   slash: move({
+    id: "slash",
     name: "Slash",
     damage: 30,
     description: "Deals {damage} damage to target.",
@@ -151,6 +168,7 @@ world.moves = {
   }),
   
   railgun: move({
+    id: "railgun",
     name: "Railgun",
     damage: 50,
     description: "Deals {damage} damage to target.",
@@ -163,6 +181,7 @@ world.moves = {
   }),
   
   burn: move({
+    id: "burn",
     name: "Burn",
     damage: 20,
     description: "Deals {damage} damage to each target.",
@@ -175,6 +194,7 @@ world.moves = {
   }),
   
   revive: move({
+    id: "revive",
     name: "Revive",
     description: "Revives a destroyed robot with 50 integrity.",
     eachTarget: function (me, world, target) {
@@ -191,6 +211,7 @@ world.moves = {
   }),
   
   refuel: move({
+    id: "refuel",
     name: "Refuel",
     description: "Transfers up to 50 supply.",
     eachTarget: function (me, world, target) {
@@ -304,6 +325,20 @@ world.blueprints = {
     armour: 5
   }),
 };
+
+world.behaviours = {};
+let robot_names = ["alpha", "epsilon", "omega"];
+for (let robot of robot_names) {
+  let triggers = [];
+  for (let i = 0; i < 7; i++) {
+    triggers[i] = trigger({
+      condition: world.conditions.any,
+      action: world.moves.bash,
+      targets: world.targets.foeLeastIntegrity
+    });
+  }
+  world.behaviours[robot] = behaviour({ triggers: triggers });
+}
 
 game.state.add("load", loadState);
 game.state.add("menu", menuState);
