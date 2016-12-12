@@ -59,180 +59,114 @@ var logger = function (spec) {
   return that;
 };
 var log = null;
+var encounter, encounters, dungeonComplete = false;
 
 var battleState = {
   create: function () {
     log = logger({x: game.width - 800, y: game.height - 288});
     game.add.existing(log);
+
+    encounters = [
+      { "goblin": 1, },
+      { "goblin": 2, },
+      { "gnoll": 1, },
+      { "gnoll": 1, "goblin": 2, },
+      { "ogre": 1, },
+      { "gelatinouscube": 1, },
+      { "troll": 1, "goblin": 1, },
+      { "owlbear": 1, "gnoll": 1, },
+      { "goblin": 3, "gnoll": 2, },
+      { "dragon": 1, },
+    ];
+
+    encounter = -1;
+
+    // Setup robots
+    let robots =[
+      robot({
+        name: "Alpha",
+        behaviour: world.behaviours.alpha,
+        blueprint: world.blueprints.alpha,
+      }),
+      
+      robot({
+        name: "Epsilon",
+        behaviour: world.behaviours.epsilon,
+        blueprint: world.blueprints.epsilon,
+      }),
+      
+      robot({
+        name: "Omega",
+        behaviour: world.behaviours.omega,
+        blueprint: world.blueprints.omega,
+      })
+    ];
+
+    world.haveWon = function () {
+      for (let actor of world.actors) {
+        if (!actor.isRobot() && !actor.isDestroyed()) {
+          return false;
+        }
+      }
+      return true;
+    };
     
-    world.actors.push(monster({
-      name: "Monster",
-      behaviour: behaviour({
-        triggers: [
-          trigger({
-            condition: compareCondition({
-              property: "integrity",
-              value: 50,
-              lessThan: true
-            }),
-            targets: target({
-              allies: false,
-            }),
-            action: move({
-              name: "Finisher",
-              damage: 50,
-              description: "Deals {damage} damage to target.",
-              heat: 40,
-              log: "{me} attacks {target} with a finishing move for {damage} damage",
-              targeted: true,
-              supply: 10,
-              time: 1,
-              type: armourPiercingDamage,
-            })
-          }),
-          trigger({
-            condition: condition({}),
-            targets: target({
-              allies: false,
-            }),
-            action: move({
-              name: "Claw",
-              damage: 30,
-              description: "Deals {damage} damage to target.",
-              heat: 20,
-              log: "{me} claws {target} for {damage} damage",
-              targeted: true,
-              supply: 1,
-              time: 1,
-              type: physicalDamage,
-            })
-          })
-        ]
-      }),
-      blueprint: blueprint({
-        integrity: 100,
-        heat: 100,
-        heatSink: 10,
-        shield: 100,
-        shieldRecharge: 10,
-        supply: 100,
-        armour: 5
-      }),
-    }));
-    
-    world.actors.push(monster({
-      name: "Monster 2",
-      behaviour: behaviour({
-        triggers: [
-          trigger({
-            condition: compareCondition({
-              property: "integrity",
-              value: 50,
-              lessThan: true
-            }),
-            targets: target({
-              allies: false,
-            }),
-            action: move({
-              name: "Finisher",
-              damage: 5,
-              description: "Deals {damage} damage to target.",
-              heat: 40,
-              log: "{me} attacks {target} with a finishing move for {damage} damage",
-              targeted: true,
-              supply: 10,
-              time: 1,
-              type: armourPiercingDamage,
-            })
-          }),
-          trigger({
-            condition: condition({}),
-            targets: target({
-              allies: false,
-            }),
-            action: move({
-              name: "Claw",
-              damage: 3,
-              description: "Deals {damage} damage to target.",
-              heat: 20,
-              log: "{me} claws {target} for {damage} damage",
-              targeted: true,
-              supply: 1,
-              time: 1,
-              type: physicalDamage,
-            })
-          })
-        ]
-      }),
-      blueprint: blueprint({
-        integrity: 10,
-        heat: 100,
-        heatSink: 10,
-        shield: 100,
-        shieldRecharge: 10,
-        supply: 100,
-        armour: 5
-      }),
-    }));
-    
-    world.actors.push(monster({
-      name: "Monster 3",
-      behaviour: behaviour({
-        triggers: [
-          trigger({
-            condition: compareCondition({
-              property: "integrity",
-              value: 50,
-              lessThan: true
-            }),
-            targets: target({
-              allies: false,
-            }),
-            action: move({
-              name: "Finisher",
-              damage: 5,
-              description: "Deals {damage} damage to target.",
-              heat: 40,
-              log: "{me} attacks {target} with a finishing move for {damage} damage",
-              targeted: true,
-              supply: 10,
-              time: 1,
-              type: armourPiercingDamage,
-            })
-          }),
-          trigger({
-            condition: condition({}),
-            targets: target({
-              allies: false,
-            }),
-            action: move({
-              name: "Claw",
-              damage: 3,
-              description: "Deals {damage} damage to target.",
-              heat: 20,
-              log: "{me} claws {target} for {damage} damage",
-              targeted: true,
-              supply: 1,
-              time: 1,
-              type: physicalDamage,
-            })
-          })
-        ]
-      }),
-      blueprint: blueprint({
-        integrity: 20,
-        heat: 100,
-        heatSink: 10,
-        shield: 100,
-        shieldRecharge: 10,
-        supply: 100,
-        armour: 5
-      }),
-    }));
+    world.haveLost = function () {
+      for (let actor of world.actors) {
+        if (actor.isRobot() && !actor.isDestroyed()) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    world.loadNextEncounter = function (){
+      world.actors = [];
+      world.tick = 0
+      for (let robot of robots) {
+        robot.rest();
+        world.actors.push(robot);
+      }
+
+      encounter++;
+      if (encounter < encounters.length) {
+        for (let property in encounters[encounter]) {
+          if (encounters[encounter].hasOwnProperty(property)) {
+            let n = encounters[encounter][property];
+            let blueprint = world.blueprints[property];
+            let behaviour = world.behaviours[property];
+            if (n == 1) {
+              log.print("There is one "+blueprint.name+" here");
+              world.actors.push(monster({
+                name: blueprint.name,
+                behaviour: behaviour,
+                blueprint: blueprint,
+              }));
+            } else if (n > 1) {
+              log.print("There are "+n+" "+blueprint.name+"s here");
+              for (let i = 1; i <= n; i++) {
+                world.actors.push(monster({
+                  name: blueprint.name + " " + i,
+                  behaviour: behaviour,
+                  blueprint: blueprint,
+                }));
+              }
+            }
+          }
+        }
+        return true;
+      } else {
+        log.print("You win!");
+        return false;
+      }
+    };
+
+    log.print("Robots enter the dungeon.");
+    world.loadNextEncounter();
   },
   update: function () {
-    while (world.tick < 10) {
-      log.print("tick " + parseInt(world.tick));
+    while (!dungeonComplete) {
+      // log.print("tick " + parseInt(world.tick));
       for (let actor of world.actors) {
         if (actor.isReady(world)) {
           actor.act(world);
@@ -240,6 +174,29 @@ var battleState = {
         actor.update(world.tick);
       }
       world.tick++;
+
+      if (world.haveWon()) {
+        log.print("Monsters defeated!");
+        log.print("After resting briefly, the robots enter the next room")
+        if(!world.loadNextEncounter()) {
+          dungeonComplete = true;
+          break;
+        }
+      } 
+
+      if (world.haveLost()) {
+        log.print("Robots defeated!");
+        log.print("They survived "+encounter+" of "+encounters.length+" encounters");
+        dungeonComplete = true;
+        break;
+      }
+
+      if (world.tick > 500) {
+        log.print("Robots ran out of power!");
+        log.print("They survived "+encounter+" encounters");
+        dungeonComplete = true;
+        break;
+      }
     }
   }
 }

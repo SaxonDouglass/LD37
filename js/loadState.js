@@ -26,31 +26,6 @@ var loadState = {
   },
   
   create: function () {
-    // Setup robots
-    world.actors.push(robot({
-      name: "Alpha",
-      behaviour: behaviour({
-        triggers: []
-      }),
-      blueprint: world.blueprints.alpha
-    }));
-    
-    world.actors.push(robot({
-      name: "Epsilon",
-      behaviour: behaviour({
-        triggers: []
-      }),
-      blueprint: world.blueprints.epsilon
-    }));
-    
-    world.actors.push(robot({
-      name: "Omega",
-      behaviour: behaviour({
-        triggers: []
-      }),
-      blueprint: world.blueprints.omega
-    }));
-    
     game.state.start("menu");
   }
 };

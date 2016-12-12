@@ -1,6 +1,7 @@
 var statusEffect = function(spec) {
   var that = {};
 
+  that.name = spec.name;
   that.addLog = spec.addLog || null;
   that.canAct = !(spec.canAct === false);
   that.heatSink = spec.heatSink || 0;
@@ -70,6 +71,7 @@ var duration = function(spec) {
 
 // Can't act until heat completely dissapated
 var overheated = statusEffect({
+  name: "Overheated",
   canAct: false,
   removeIf: function (me) {
     return me.heat >= me.heatCapacity();
@@ -80,7 +82,9 @@ var overheated = statusEffect({
 
 // Deal double damage
 var empowered = statusEffect({
+  name: "Empowered",
   damageThem: function(me, them, move, shieldDamage, residualDamage) {
+    log.print("Damage doubled due to empower.")
     shieldDamage += move.damage;
     if (shieldDamage > them.shield) {
       return [them.shield, residualDamage + shieldDamage - them.shield];
@@ -92,12 +96,29 @@ var empowered = statusEffect({
 
 // Recieve double damage
 var vulnerable = statusEffect({
+  name: "Vulnerable",
   damageMe: function(me, them, move, shieldDamage, residualDamage) {
+    log.print("Damage doubled due to vulnerability.")
     shieldDamage += move.damage;
     if (shieldDamage > me.shield) {
       return [me.shield, residualDamage + shieldDamage - them.shield];
     } else {
       return [shieldDamage, residualDamage];
     }
+  },
+});
+
+// Recieve double damage for fire
+var fireVulnerability = statusEffect({
+  name: "Vulnerable to fire",
+  damageMe: function(me, them, move, shieldDamage, residualDamage) {
+    if (move.type.isType(fireDamage)) {
+      log.print("Damage doubled due to fire vulnerability.")
+      shieldDamage += move.damage;
+      if (shieldDamage > me.shield) {
+        return [me.shield, residualDamage + shieldDamage - them.shield];
+      }
+    }
+    return [shieldDamage, residualDamage];
   },
 });

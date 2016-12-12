@@ -7,6 +7,10 @@ var actor = function (spec) {
   that.shield = spec.blueprint.shield;       // Transient
   that.statusEffects = [];
   that.supply = spec.blueprint.supply;       // Persistent
+
+  for (let s of spec.blueprint.statusEffects) {
+    statusAddQueue.push([s, duration({})]);
+  }
   
   that.act = function (world) {
     var time = spec.behaviour.run(that, world);
@@ -128,7 +132,7 @@ var actor = function (spec) {
 
   that.rest = function () {
     tick = 0;
-    that.heat = that.heatCapacity;
+    that.heat = that.heatCapacity();
     that.shield = spec.blueprint.shield;
     for (let idx = 0; idx < that.statusEffects; idx++) {
       if (statusDurations[idx].restClear) {

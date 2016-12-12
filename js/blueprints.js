@@ -1,14 +1,16 @@
 var blueprint = function (spec) {
   var that = {};
   
-  that.armour = spec.armour;
-  that.heat = spec.heat;
-  that.heatSink = spec.heatSink;
-  that.integrity = spec.integrity;
-  that.shield = spec.shield;
-  that.shieldRecharge = spec.shieldRecharge;
-  that.speed = spec.speed;
-  that.supply = spec.supply;
+  that.name = spec.name;
+  that.armour = spec.armour || 0;
+  that.heat = spec.heat || 100;
+  that.heatSink = spec.heatSink || 0;
+  that.integrity = spec.integrity | 100;
+  that.shield = spec.shield || 0;
+  that.shieldRecharge = spec.shieldRecharge || 0;
+  that.speed = spec.speed || 0;
+  that.statusEffects = spec.statusEffects || [];
+  that.supply = spec.supply || 50;
 
   that.update = function (robot) {
     return that;
@@ -53,7 +55,7 @@ var component = function (spec) {
   that.description = spec.description || "Generic description";
   that.icon = spec.icon || "";
   that.shield = spec.shield || 0;
-  that.shieldRecharge = spec.shieldRecharge || 0;
+  that.shieldRecharge = spec.shieldRecharge || 2;
   that.slot = spec.slot;
   that.speed = spec.speed || 0;
   that.supply = spec.supply || 0;
@@ -184,7 +186,6 @@ var move = function (spec) {
     me.supply -= spec.supply || 0;
     if (spec.supply && spec.supply > 0) log.print("{me}'s supply reduced to " + me.supply, tags);
 
-    log.print(spec.time);
     return spec.time;
   };
   
@@ -270,12 +271,32 @@ var armourPiercingDamage = damageType({
   name: "Armour Piercing",
   parentType: physicalDamage,
   armour: function (me, them, move, effectiveArmour) {
-    return Math.max(0, effectiveArmour - 10);
+    if (effectiveArmour > 0) {
+      if (effectiveArmour > 10) {
+        log.print("Armour piercing damage partially bypasses armour");
+        return effectiveArmour - 10;
+      } else {
+        log.print("Armour piercing damage bypasses armour");
+        return 0
+      }
+    } else {
+      return effectiveArmour;
+    }
   },
 });
 
 var fireDamage = damageType({
   name: "Fire",
+});
+
+var acidDamage = damageType({
+  name: "Acid",
+  damage: function(me, them, move, shieldDamage, residualDamage) {
+    if (shieldDamage > 0) {
+      log.print("Acid damage bypasses shield");
+    }
+    return [0, residualDamage + shieldDamage];
+  }
 });
 
 var laserDamage = damageType({

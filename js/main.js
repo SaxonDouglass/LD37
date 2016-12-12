@@ -41,9 +41,27 @@ world.conditions = {
     name: "Any"
   }),
   
+  myHeatGT90: compareCondition({
+    id: "myHeatGT90",
+    name: "Self Heat > 90",
+    property: "heat",
+    value: 90,
+    lessThan: false,
+    self: true,
+  }),
+  
+  myHeatGT50: compareCondition({
+    id: "myHeatGT50",
+    name: "Self Heat > 50",
+    property: "heat",
+    value: 50,
+    lessThan: false,
+    self: true,
+  }),
+  
   integrityLT50: compareCondition({
     id: "integrityLT50",
-    name: "Integrity < 50%",
+    name: "Integrity < 50",
     property: "integrity",
     value: 50,
     lessThan: true
@@ -57,12 +75,26 @@ world.targets = {
     allies: true
   }),
   
+  foeAny: target({
+    id: "foeAny",
+    name: "Foe: any",
+    allies: false
+  }),
+  
   foeLeastIntegrity: sortedTarget({
     id: "foeLeastIntegrity",
     name: "Foe: least integrity",
     allies: false,
     property: "integrity",
     lowest: true,
+  }),
+  
+  foeMostIntegrity: sortedTarget({
+    id: "foeMostIntegrity",
+    name: "Foe: most integrity",
+    allies: false,
+    property: "integrity",
+    lowest: false,
   }),
 };
 
@@ -315,15 +347,6 @@ world.blueprints = {
     chassis: world.chassis.basic,
     components: []
   }),
-  monster: blueprint({
-    integrity: 100,
-    heat: 100,
-    heatSink: 10,
-    shield: 100,
-    shieldRecharge: 10,
-    supply: 100,
-    armour: 5
-  }),
 };
 
 world.behaviours = {};
@@ -339,6 +362,253 @@ for (let robot of robot_names) {
   }
   world.behaviours[robot] = behaviour({ triggers: triggers });
 }
+
+world.blueprints.goblin = blueprint({
+    name: "60BL1N",
+    integrity: 50,
+    heat: 50,
+    heatSink: 5,
+});
+world.behaviours.goblin = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "goblin-stab",
+        name: "Stab",
+        damage: 10,
+        description: "Deals {damage} damage to target.",
+        log: "{me} stabs {target} with its dagger for {damage} damage",
+        targeted: true,
+        time: 1,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
+world.blueprints.gnoll = blueprint({
+    name: "6N0LL",
+    integrity: 100,
+    heat: 50,
+    heatSink: 5,
+});
+world.behaviours.gnoll = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "gnoll-stab",
+        name: "Stab",
+        damage: 40,
+        description: "Deals {damage} damage to target.",
+        log: "{me} stabs {target} with its spear for {damage} damage",
+        targeted: true,
+        time: 2,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
+world.blueprints.ogre = blueprint({
+    name: "06R3",
+    integrity: 150,
+    heat: 50,
+    heatSink: 5,
+});
+world.behaviours.ogre = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "ogre-club",
+        name: "Club",
+        damage: 60,
+        description: "Deals {damage} damage to target.",
+        log: "{me} clubs {target} for {damage} damage",
+        targeted: true,
+        time: 2,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
+world.blueprints.owlbear = blueprint({
+    name: "0WLB34R",
+    integrity: 150,
+    armour: 5,
+    heat: 60,
+    heatSink: 20,
+});
+world.behaviours.owlbear = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.myHeatGT50,
+      action: move({
+        id: "owlbear-bite",
+        name: "Bite",
+        damage: 50,
+        heat: 50,
+        description: "Deals {damage} damage to target.",
+        log: "{me} bites {target} for {damage} damage",
+        targeted: true,
+        time: 1,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "owlbear-claw",
+        name: "Claw",
+        damage: 20,
+        description: "Deals {damage} damage to target.",
+        log: "{me} claws {target} for {damage} damage",
+        targeted: true,
+        time: 1,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
+world.blueprints.troll = blueprint({
+    name: "7R0LL",
+    integrity: 50,
+    shield: 100,
+    shieldRecharge: 20,
+    heat: 50,
+    heatSink: 5,
+    statusEffects: [fireVulnerability],
+});
+world.behaviours.troll = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "troll-club",
+        name: "Club",
+        damage: 60,
+        description: "Deals {damage} damage to target.",
+        log: "{me} clubs {target} for {damage} damage",
+        targeted: true,
+        time: 3,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
+world.blueprints.gelatinouscube = blueprint({
+    name: "63L471N0US CUB3",
+    integrity: 150,
+    heat: 60,
+    heatSink: 5,
+});
+world.behaviours.gelatinouscube = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.myHeatGT50,
+      action: move({
+        id: "gelatinouscube-absorb",
+        name: "Absorb",
+        eachTarget: function (me, world, target) {
+          target.addStatusEffect(statusEffect({
+            name: "Absorbed",
+            removeLog: "{me} escapes from " + me.name,
+            canAct: false,
+            update: function (target) {
+              m = move({
+                name: "Acid burn",
+                description: "Deals {damage} acid damage",
+                targeted: true,
+                damage: 5,
+                time: 0,
+                type: acidDamage,
+              });
+              target.damage(m.damage, me, m);
+            },
+            removeIf: function (target) {
+              return me.isDestroyed();
+            },
+          }), duration({ticks: world.ticks + 10}))
+        },
+        heat: 50,
+        description: "Incapacitates target for 10 ticks and deals 5 acid damage per tick.",
+        log: "{me} absorbs {target}, inacpacitating them",
+        targeted: true,
+        time: 3,
+      }),
+      targets: world.targets.foeMostIntegrity,
+    }),
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "gelatinouscube-pseudopod",
+        name: "Pseudopod",
+        damage: 10,
+        description: "Deals {damage} acid damage to target.",
+        log: "{me} strikes {target} for {damage} acid damage",
+        targeted: true,
+        time: 2,
+        type: acidDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
+world.blueprints.dragon = blueprint({
+    name: "DR4G0N",
+    integrity: 150,
+    shield: 50,
+    recharge: 10,
+    armour: 10,
+    heat: 100,
+    heatSink: 10,
+});
+world.behaviours.dragon = behaviour({
+  triggers: [
+    trigger({
+      condition: world.conditions.myHeatGT90,
+      action: move({
+        id: "dragon-fire",
+        name: "Fire breathing",
+        damage: 60,
+        heat: 90,
+        description: "Deals {damage} damage to all targets.",
+        log: "{me} breathes fire on {targets} for {damage} damage",
+        targeted: false,
+        time: 3,
+        type: fireDamage,
+      }),
+      targets: world.targets.foeAny,
+    }),
+    trigger({
+      condition: world.conditions.any,
+      action: move({
+        id: "dragon-bite",
+        name: "Bite",
+        damage: 30,
+        description: "Deals {damage} damage to target.",
+        log: "{me} bites {target} for {damage} damage",
+        targeted: true,
+        time: 1,
+        type: physicalDamage,
+      }),
+      targets: world.targets.foeLeastIntegrity,
+    }),
+  ],
+});
+
 
 game.state.add("load", loadState);
 game.state.add("menu", menuState);
