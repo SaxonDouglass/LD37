@@ -50,6 +50,8 @@ var component = function (spec) {
   that.integrity = spec.integrity || 0;
   that.moves = spec.moves || [];
   that.name = spec.name || "Generic component";
+  that.description = spec.description || "Generic description";
+  that.icon = spec.icon || "";
   that.shield = spec.shield || 0;
   that.shieldRecharge = spec.shieldRecharge || 0;
   that.slot = spec.slot;
@@ -200,34 +202,18 @@ var robotBlueprint = function (spec) {
   that.shieldRecharge = that.shieldRecharge || spec.chassis.shieldRecharge;
   that.speed = spec.speed || spec.chassis.speed;
   that.supply = that.supply || spec.chassis.supply;
-
-  for (let i = 0; i < spec.components.length; i++) {
-    let component = spec.components[i];
-    if (component === null) {
-      continue
+  
+  that.setComponent = function (idx, component) {
+    if (that.components[idx] != undefined &&
+        that.components[idx].slot !== spec.chassis.slots[idx]) {
+      console.warning("Incorrect slot for " + that.components[idx].name +
+        " (requires " + that.components[idx].slot.name + ", not " +
+        spec.chassis.slots[idx].name + "), skipping");
+      return;
     }
-
-    let slot = spec.chassis.slots[i];
-    if (slot !== component.slot) {
-      console.warning("Incorrect slot for " + component.name + " (requires " + component.slot.name + ", not " + slot.name + "), skipping")
-      continue
-    }
-
-    that.components[i] = component;
-
-    for (let move of component.moves) {
-      that.moves.push(move);
-    }
-
-    that.armour += component.armour
-    that.heat += component.heat
-    that.heatSink += component.heatSink
-    that.integrity += component.integrity
-    that.shield += component.shield
-    that.shieldRecharge += component.shieldRecharge
-    that.speed += component.speed
-    that.supply += component.supply
-  }
+    that.components[idx] = component;
+    that.updateComponents();
+  };
 
   that.update = function (robot) {
     for (let component of that.components) {
@@ -239,6 +225,38 @@ var robotBlueprint = function (spec) {
     }
     return that;
   }
+  
+  that.updateComponents = function () {
+    for (let i = 0; i < spec.components.length; i++) {
+      let component = spec.components[i];
+      if (component === null) {
+        continue
+      }
+
+      let slot = spec.chassis.slots[i];
+      if (slot !== component.slot) {
+        console.warning("Incorrect slot for " + component.name + " (requires " + component.slot.name + ", not " + slot.name + "), skipping")
+        continue
+      }
+
+      that.components[i] = component;
+
+      for (let move of component.moves) {
+        that.moves.push(move);
+      }
+
+      that.armour += component.armour
+      that.heat += component.heat
+      that.heatSink += component.heatSink
+      that.integrity += component.integrity
+      that.shield += component.shield
+      that.shieldRecharge += component.shieldRecharge
+      that.speed += component.speed
+      that.supply += component.supply
+    }
+  };
+  
+  that.updateComponents();
 
   return that;
 };

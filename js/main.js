@@ -2,28 +2,15 @@ var game = new Phaser.Game(1920, 1080, Phaser.AUTO, "");
 
 var world = {
   actors: [],
+  slot: {
+    head: slot({ name: "Head" }),
+    torso: slot({ name: "Torso" }),
+    arm: slot({ name: "Arm" }),
+    legs: slot({ name: "Legs" }),
+    accessory: slot({ name: "Accessory" })
+  },
   tick: 0
 };
-
-var head = slot({
-  name: "Head",
-});
-
-var arm = slot({
-  name: "Arm",
-});
-
-var torso = slot({
-  name: "Torso",
-});
-
-var legs = slot({
-  name: "Legs",
-});
-
-var accessory = slot({
-  name: "Accessory",
-});
 
 world.chassis = {
   basic: chassis({
@@ -35,7 +22,15 @@ world.chassis = {
     shield: 50,
     shieldRecharge: 10,
     speed: 20,
-    slots: [head, arm, arm, torso, legs, accessory, accessory],
+    slots: [
+      world.slot.head,
+      world.slot.torso,
+      world.slot.arm,
+      world.slot.arm,
+      world.slot.legs,
+      world.slot.accessory,
+      world.slot.accessory
+    ],
     supply: 100,
   })
 };
@@ -212,59 +207,77 @@ world.moves = {
 world.components = {
   coolingVents: component({
     name: "Cooling vents",
+    description: "Keep your cool when others are losing theirs",
+    icon: "buttons_part_head",
     heatSink: 10,
     moves: [world.moves.ventCoolant],
-    slot: head,
+    slot: world.slot.head,
   }),
   
   headLaser: component({
     name: "Head mounted laser",
+    description: "Where's the frickin' shark?",
+    icon: "buttons_part_head",
     moves: [world.moves.laserBlast],
-    slot: head,
+    slot: world.slot.head,
   }),
   
   fuelTank: component({
     name: "Fuel tank",
+    description: "Now where are you going to keep your lighter?",
+    icon: "buttons_part_torso",
     supply: 100,
-    slot: torso,
+    slot: world.slot.torso,
   }),
 
   shieldBooster: component({
     name: "Shield booster",
+    description: "For those who take personal space very seriously.",
+    icon: "buttons_part_torso",
     moves: [world.moves.overchargeShields],
     shield: 50,
     shieldRecharge: 10,
-    slot: torso,
+    slot: world.slot.torso,
   }),
 
   sword: component({
     name: "Sword",
+    description: "Sharper than a new three-piece suit.",
+    icon: "buttons_part_left_arm",
     moves: [world.moves.slash],
-    slot: arm,
+    slot: world.slot.arm,
   }),
 
   railgun:component({
     name: "Railgun",
+    description: "Always keep a supply of skewers handy.",
+    icon: "buttons_part_left_arm",
     moves: [world.moves.railgun],
-    slot: arm,
+    slot: world.slot.arm,
   }),
 
   flamethrower: component({
     name: "Flamethrower",
+    description: "He asked you to keep his seat warm...",
+    icon: "buttons_part_left_arm",
     moves: [world.moves.burn],
-    slot: arm,
+    slot: world.slot.arm,
   }),
 
   wrench: component({
     name: "Wrench",
+    description: "All robots know to just Fonzie it.",
+    icon: "buttons_part_left_arm",
     moves: [world.moves.repair, world.moves.revive],
-    slot: arm,
+    slot: world.slot.arm,
   }),
 
   fuelhose: component({
     name: "Fuel hose",
+    description: "Or are you just glad to see me?",
+    icon: "buttons_part_left_arm",
     moves: [world.moves.refuel],
-    slot: arm,
+    slot: world.slot.arm,
   })
 };
 

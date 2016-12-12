@@ -2,180 +2,90 @@
 var blueprintState = {
   create: function () {
     // Robot tabs on left-side
+    this.robots = [
+      world.blueprints.alpha,
+      world.blueprints.epsilon,
+      world.blueprints.omega
+    ];
+    
     this.group_tabs = game.add.group();
-    
-    this.button_tab_alpha = game.make.button(
-      0, 0,
-      'buttons_tab_alpha', this.onButtonTab, this
-    );
-    this.group_tabs.add(this.button_tab_alpha);
-    
-    this.button_tab_epsilon = game.make.button(
-      0, 0,
-      'buttons_tab_epsilon', this.onButtonTab, this
-    );
-    this.group_tabs.add(this.button_tab_epsilon);
-    
-    this.button_tab_omega = game.make.button(
-      0, 0,
-      'buttons_tab_omega', this.onButtonTab, this
-    );
-    this.group_tabs.add(this.button_tab_omega);
-    
+    this.group_tabs.add(this.robotTab({
+      image: "buttons_tab_alpha", robotIndex: 0}));
+    this.group_tabs.add(this.robotTab({
+      image: "buttons_tab_epsilon", robotIndex: 1}));
+    this.group_tabs.add(this.robotTab({
+      image: "buttons_tab_omega", robotIndex: 2}));
     this.group_tabs.align(1, -1, 64, 270, Phaser.LEFT_CENTER);
     this.group_tabs.x = 16;
     this.group_tabs.y = (game.height - this.group_tabs.height) / 2;
     
-    // Selection pop-up panel
-    this.group_selection = game.add.group();
-    
-    
-    // Parts panel top left
-    this.group_parts = game.add.group();
-    
-    this.button_part_head = this.partSlot({
-      x: 256, y: 0, image: "buttons_part_head",
-      items: [
-        {
-          name: "HeadTest1",
-          description: "Hooby dooby",
-          icon: "buttons_part_head"
-        },
-        {
-          name: "HeadTest2",
-          description: "YOLO #SWAG",
-          icon: "buttons_part_head"
-        },
-        {
-          name: "HeadTest3",
-          description: "Styling!",
-          icon: "buttons_part_head"
+    // Load components by slot
+    let items = [];
+    for (let s in world.slot) {
+      if (world.slot.hasOwnProperty(s)) {
+        items[s] = [];
+        for (let c in world.components) {
+          if (world.components.hasOwnProperty(c)) {
+            if (world.components[c].slot == world.slot[s]) {
+              items[s].push(world.components[c]);
+            }
+          }
         }
-      ]
-    });
-    this.group_parts.add(this.button_part_head);
-    
-    this.button_part_torso = this.partSlot({
-      x: 256, y: 256, image: "buttons_part_torso",
-      items: [
-        {
-          name: "TorsoTest1",
-          description: "Hooby dooby",
-          icon: "buttons_part_torso"
-        },
-        {
-          name: "TorsoTest2",
-          description: "YOLO #SWAG",
-          icon: "buttons_part_torso"
-        },
-        {
-          name: "TorsoTest3",
-          description: "Styling!",
-          icon: "buttons_part_torso"
-        }
-      ]
-    });
-    this.group_parts.add(this.button_part_torso);
-    
-    
-    this.button_part_left_arm = this.partSlot({
-      x: 512, y: 256, image: "buttons_part_left_arm",
-      items: [
-        {
-          name: "LeftArmTest1",
-          description: "Hooby dooby",
-          icon: "buttons_part_left_arm"
-        },
-        {
-          name: "LeftArmTest2",
-          description: "YOLO #SWAG",
-          icon: "buttons_part_left_arm"
-        },
-        {
-          name: "LeftArmTest3",
-          description: "Styling!",
-          icon: "buttons_part_left_arm"
-        }
-      ]
-    });
-    this.group_parts.add(this.button_part_left_arm);
-    
-    this.button_part_right_arm = this.partSlot({
-      x: 0, y: 256, image: "buttons_part_right_arm",
-      items: [
-        {
-          name: "RightArmTest1",
-          description: "Hooby dooby",
-          icon: "buttons_part_right_arm"
-        },
-        {
-          name: "RightArmTest2",
-          description: "YOLO #SWAG",
-          icon: "buttons_part_right_arm"
-        },
-        {
-          name: "RightArmTest3",
-          description: "Styling!",
-          icon: "buttons_part_right_arm"
-        }
-      ]
-    });
-    this.group_parts.add(this.button_part_right_arm);
-    
-    this.button_part_legs = this.partSlot({
-      x: 256, y: 512, image: "buttons_part_legs",
-      items: [
-        {
-          name: "LegsTest1",
-          description: "Hooby dooby",
-          icon: "buttons_part_legs"
-        },
-        {
-          name: "LegsTest2",
-          description: "YOLO #SWAG",
-          icon: "buttons_part_legs"
-        },
-        {
-          name: "LegsTest3",
-          description: "Styling!",
-          icon: "buttons_part_legs"
-        }
-      ]
-    });
-    this.group_parts.add(this.button_part_legs);
-    
-    let accessory_items = [
-      {
-        name: "Acc1Test1",
-        description: "Hooby dooby",
-        icon: "buttons_part_accessory"
-      },
-      {
-        name: "Acc2Test2",
-        description: "YOLO #SWAG",
-        icon: "buttons_part_accessory"
-      },
-      {
-        name: "Acc3Test3",
-        description: "Styling!",
-        icon: "buttons_part_accessory"
       }
-    ];
+    }
     
-    this.button_part_accessory1 = this.partSlot({
-      x: 0, y: 512, image: "buttons_part_accessory",
-      items: accessory_items
-    });
-    this.group_parts.add(this.button_part_accessory1);
-    
-    this.button_part_accessory2 = this.partSlot({
-      x: 512, y: 512, image: "buttons_part_accessory",
-      items: accessory_items
-    });
-    this.group_parts.add(this.button_part_accessory2);
-    
-    this.group_parts.x = 256;
-    this.group_parts.y = 128;
+    // Parts panel top left (one for each robot)
+    this.group_parts = [];
+    for (let i = 0; i < 3; i++) {
+      this.group_parts[i] = game.add.group();
+      
+      this.button_part_head = this.partSlot({
+        x: 256, y: 0, image: "buttons_part_head",
+        items: items.head, robot: i, slotIndex: 0
+      });
+      this.group_parts[i].add(this.button_part_head);
+      
+      this.button_part_torso = this.partSlot({
+        x: 256, y: 256, image: "buttons_part_torso",
+        items: items.torso, robot: i, slotIndex: 1
+      });
+      this.group_parts[i].add(this.button_part_torso);
+      
+      this.button_part_left_arm = this.partSlot({
+        x: 512, y: 256, image: "buttons_part_left_arm",
+        items: items.arm, robot: i, slotIndex: 2
+      });
+      this.group_parts[i].add(this.button_part_left_arm);
+      
+      this.button_part_right_arm = this.partSlot({
+        x: 0, y: 256, image: "buttons_part_right_arm",
+        items: items.arm, robot: i, slotIndex: 3
+      });
+      this.group_parts[i].add(this.button_part_right_arm);
+      
+      this.button_part_legs = this.partSlot({
+        x: 256, y: 512, image: "buttons_part_legs",
+        items: items.legs, robot: i, slotIndex: 4
+      });
+      this.group_parts[i].add(this.button_part_legs);
+      
+      this.button_part_accessory1 = this.partSlot({
+        x: 0, y: 512, image: "buttons_part_accessory",
+        items: items.accessory, robot: i, slotIndex: 5
+      });
+      this.group_parts[i].add(this.button_part_accessory1);
+      
+      this.button_part_accessory2 = this.partSlot({
+        x: 512, y: 512, image: "buttons_part_accessory",
+        items: items.accessory, robot: i, slotIndex: 6
+      });
+      this.group_parts[i].add(this.button_part_accessory2);
+      
+      this.group_parts[i].x = 256;
+      this.group_parts[i].y = 128;
+      
+      this.group_parts[i].visible = (i === 0);
+    };
     
     // Statistics panel top right
     this.panel_stats = this.statsPanel({
@@ -203,8 +113,18 @@ var blueprintState = {
     
   },
   
-  onButtonTab: function () {
-    game.state.start("menu");
+  robotTab: function (spec) {
+    that = game.make.button(
+      0, 0, spec.image, function () {
+        for (let i = 0; i < 3; i++) {
+          this.group_tabs.children[i].alpha = i == spec.robotIndex ? 1.0 : 0.5;
+          this.group_parts[i].visible = i == spec.robotIndex;
+        }
+      }, this
+    );
+    if (spec.robotIndex != 0) that.alpha = 0.5;
+    
+    return that;
   },
   
   partSlot: function (spec, my) {
@@ -212,7 +132,9 @@ var blueprintState = {
     
     let onClick = function () {
       this.selectionPanel({
-        items: spec.items
+        items: spec.items,
+        robot: spec.robot,
+        slotIndex: spec.slotIndex
       });
     };
     
@@ -227,7 +149,7 @@ var blueprintState = {
     my = my || {};
     
     let onClick = function () {
-      // TODO: Make selection...
+      this.robots[spec.robot].setComponent(spec.slotIndex, spec.item);
       spec.panel.destroy(true);
       this.group_parts.visible = true;
     };
@@ -235,9 +157,9 @@ var blueprintState = {
     var that = game.make.button(0, 0, "buttons_part_selection",
       onClick, this
     );
-    that.name = spec.name;
-    that.description = spec.description;
-    that.icon = game.make.image(16, 16, spec.icon);
+    that.name = spec.item.name;
+    that.description = spec.item.description;
+    that.icon = game.make.image(16, 16, spec.item.icon);
     that.addChild(that.icon);
     
     let style = { font: "20px monospace", fill: "#FFFFFF" };
@@ -257,8 +179,12 @@ var blueprintState = {
     this.group_parts.visible = false;
     
     for (let item of spec.items) {
-      item.panel = that;
-      that.add(this.selectionItem(item));
+      that.add(this.selectionItem({
+        item: item,
+        panel: that,
+        robot: spec.robot,
+        slotIndex: spec.slotIndex
+      }));
     }
     that.align(1, -1, 768, 192, Phaser.CENTER);
     that.x = 224;
