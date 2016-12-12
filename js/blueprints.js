@@ -110,7 +110,7 @@ var move = function (spec) {
   that.baseDamage = spec.damage || 0; 
   that.baseRepair = spec.reapir || 0; 
   that.targeted = !(spec.targeted === false);
-  that.type = spec.type || physicalDamage;
+  that.type = spec.type || kineticDamage;
   that.self = spec.self === true;
   
   that.run = function (me, world, targets) {
@@ -263,20 +263,20 @@ var robotBlueprint = function (spec) {
   return that;
 };
 
-var physicalDamage = damageType({
-  name: "Physical",
+var kineticDamage = damageType({
+  name: "Kinetic",
 });
 
-var armourPiercingDamage = damageType({
-  name: "Armour Piercing",
-  parentType: physicalDamage,
+var chemicalDamage = damageType({
+  name: "Chemical (AP)",
+  parentType: kineticDamage,
   armour: function (me, them, move, effectiveArmour) {
     if (effectiveArmour > 0) {
       if (effectiveArmour > 10) {
-        log.print("Armour piercing damage partially bypasses armour");
+        log.print("Chemical damage partially bypasses armour");
         return effectiveArmour - 10;
       } else {
-        log.print("Armour piercing damage bypasses armour");
+        log.print("Chemical damage bypasses armour");
         return 0
       }
     } else {
@@ -285,20 +285,24 @@ var armourPiercingDamage = damageType({
   },
 });
 
-var fireDamage = damageType({
-  name: "Fire",
-});
-
-var acidDamage = damageType({
-  name: "Acid",
+var thermalDamage = damageType({
+  name: "Thermal",
   damage: function(me, them, move, shieldDamage, residualDamage) {
-    if (shieldDamage > 0) {
-      log.print("Acid damage bypasses shield");
+    if (residualDamage > 0) {
+      log.print("Thermal damage also generates heat");
+      them.heat -= residualDamage;
     }
-    return [0, residualDamage + shieldDamage];
+    
+    return [shieldDamage, residualDamage];
   }
 });
 
-var laserDamage = damageType({
-  name: "Laser",
+var electromagneticDamage = damageType({
+  name: "Electromagnetic",
+  damage: function(me, them, move, shieldDamage, residualDamage) {
+    if (shieldDamage > 0) {
+      log.print("Electromagnetic damage bypasses shield");
+    }
+    return [0, residualDamage + shieldDamage];
+  }
 });

@@ -45,7 +45,6 @@ var logger = function (spec) {
       }
       return match;
     });
-    console.log(str)
     if (contents.length > 0) contents += "\n";
     contents += str;
     contents = contents.replace(/(#[a-fA-F0-9]{6}){([^}]+)}/g, function(match, p0, p1, offset) {
@@ -54,7 +53,7 @@ var logger = function (spec) {
       return p1;
     });
     that.text.setText(contents);
-    that.clamp();
+    that.text.y = that.background.height - that.text.height;
   };
   return that;
 };
@@ -80,6 +79,8 @@ var battleState = {
     ];
 
     encounter = -1;
+    
+    dungeonComplete = false;
 
     // Setup robots
     let robots =[
@@ -128,6 +129,7 @@ var battleState = {
         world.actors.push(robot);
       }
 
+      world.stats.encounterLast = encounter;
       encounter++;
       if (encounter < encounters.length) {
         for (let property in encounters[encounter]) {
@@ -162,41 +164,50 @@ var battleState = {
     };
 
     log.print("Robots enter the dungeon.");
+    world.stats.encounterTotal = encounters.length;
     world.loadNextEncounter();
   },
   update: function () {
-    while (!dungeonComplete) {
-      // log.print("tick " + parseInt(world.tick));
-      for (let actor of world.actors) {
-        if (actor.isReady(world)) {
-          actor.act(world);
-        }
-        actor.update(world.tick);
+    // log.print("tick " + parseInt(world.tick));
+    if (this.button_ok) {return;}
+    
+    for (let actor of world.actors) {
+      if (actor.isReady(world)) {
+        actor.act(world);
       }
-      world.tick++;
+      actor.update(world.tick);
+    }
+    world.tick++;
 
-      if (world.haveWon()) {
-        log.print("Monsters defeated!");
-        log.print("After resting briefly, the robots enter the next room")
-        if(!world.loadNextEncounter()) {
-          dungeonComplete = true;
-          break;
-        }
-      } 
-
-      if (world.haveLost()) {
-        log.print("Robots defeated!");
-        log.print("They survived "+encounter+" of "+encounters.length+" encounters");
+    if (world.haveWon()) {
+      log.print("Monsters defeated!");
+      log.print("After resting briefly, the robots enter the next room")
+      if(!world.loadNextEncounter()) {
+        world.stats.win = true;
         dungeonComplete = true;
-        break;
       }
+    } 
 
-      if (world.tick > 500) {
-        log.print("Robots ran out of power!");
-        log.print("They survived "+encounter+" encounters");
-        dungeonComplete = true;
-        break;
-      }
+    if (world.haveLost()) {
+      log.print("Robots defeated!");
+      
+      world.stats.win = false;
+      dungeonComplete = true;
+    }
+
+    if (world.tick > 500) {
+      log.print("Robots ran out of power!");
+      world.stats.win = false;
+      dungeonComplete = true;
+    }
+    
+    if (dungeonComplete) {
+      // OK button bottom right
+      this.button_ok = game.add.button(
+        game.width - 224, game.height - 92, 'buttons_ok', function () {
+          game.state.start("battleReport");
+        }, this
+      );
     }
   }
 }

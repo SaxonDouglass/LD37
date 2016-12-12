@@ -9,6 +9,11 @@ var world = {
     legs: slot({ name: "Legs" }),
     accessory: slot({ name: "Accessory" })
   },
+  stats: {
+    win: false,
+    encounterLast: -1,
+    encounterTotal: -1
+  },
   tick: 0
 };
 
@@ -102,14 +107,92 @@ world.moves = {
   bash: move({
     id: "bash",
     name: "Bash",
+    damage: 5,
+    description: "Deals {damage} kinetic damage to target.",
+    heat: 0,
+    log: "{me} bashes {target} for {damage} damage",
+    targeted: true,
+    supply: 0,
+    time: 1,
+    type: kineticDamage,
+  }),
+  
+  slash: move({
+    id: "slash",
+    name: "Slash",
+    damage: 10,
+    description: "Deals {damage} kinetic damage to target.",
+    heat: 10,
+    log: "{me} slashes {target} with energy blade for {damage} damage",
+    targeted: true,
+    supply: 0,
+    time: 1,
+    type: kineticDamage,
+  }),
+  
+  chainGun: move({
+    id: "chaingun",
+    name: "Chain gun",
     damage: 20,
-    description: "Deals {damage} damage to target.",
-    heat: 20,
-    log: "{me} punches {target} for {damage} damage",
+    description: "Deals {damage} kinetic damage to target.",
+    heat: 10,
+    log: "{me} shoots {target} with chain gun for {damage} damage",
+    targeted: true,
+    supply: 2,
+    time: 1,
+    type: kineticDamage,
+  }),
+  
+  railGun: move({
+    id: "railgun",
+    name: "Rail gun",
+    damage: 40,
+    description: "Deals {damage} kinetic damage to target.",
+    heat: 60,
+    log: "{me} shoots {target} with rail gun for {damage} damage",
     targeted: true,
     supply: 1,
     time: 1,
-    type: physicalDamage,
+    type: kineticDamage,
+  }),
+  
+  laserCannon: move({
+    id: "lasercannon",
+    name: "Laser cannon",
+    damage: 20,
+    description: "Deals {damage} electromagnetic damage to target.",
+    heat: 50,
+    log: "{me} shoots {target} with laser cannon for {damage} damage",
+    targeted: true,
+    supply: 1,
+    time: 1,
+    type: electromagneticDamage,
+  }),
+  
+  flamethrower: move({
+    id: "flamethrower",
+    name: "Flamethrower",
+    damage: 20,
+    description: "Deals {damage} thermal damage to target.",
+    heat: 40,
+    log: "{me} shoots {target} with laser cannon for {damage} damage",
+    targeted: true,
+    supply: 1,
+    time: 1,
+    type: thermalDamage,
+  }),
+  
+  acidSoaker: move({
+    id: "acidsoaker",
+    name: "Acid soaker",
+    damage: 20,
+    description: "Deals {damage} chemical damage to target.",
+    heat: 30,
+    log: "{me} shoots {target} with acid soaker for {damage} damage",
+    targeted: true,
+    supply: 1,
+    time: 1,
+    type: chemicalDamage,
   }),
   
   repair: move({
@@ -118,8 +201,8 @@ world.moves = {
     description: "Repairs up to {repair} integrity damage.",
     heat: 30,
     log: "{me} repairs {target} for {repair} integrity",
-    repair: 30,
-    supply: 10,
+    repair: 50,
+    supply: 5,
     targeted: true,
     time: 1,
     validTarget: function (me, world, target) {
@@ -127,33 +210,51 @@ world.moves = {
     },
   }),
   
-  finisher: move({
-    id: "finisher",
-    name: "Finisher",
-    damage: 50,
-    description: "Deals {damage} damage to target.",
-    heat: 40,
-    log: "{me} attacks {target} with a finishing move for {damage} damage",
-    targeted: true,
-    supply: 10,
-    time: 1,
-    type: armourPiercingDamage,
-  }),
-  
-  claw: move({
-    id: "claw",
-    name: "Claw",
-    damage: 30,
-    description: "Deals {damage} damage to target.",
-    heat: 20,
-    log: "{me} claws {target} for {damage} damage",
-    targeted: true,
+  overcharge: move({
+    id: "overcharge",
+    name: "Overcharge",
+    description: "Increases current shields by 50, even beyond maximum.",
+    heat: 50,
     supply: 1,
+    log: "{me} overcharges its shields",
+    once: function (me, world, targets) {
+      me.shield += 50;
+    },
+    self: true,
     time: 1,
-    type: physicalDamage,
   }),
   
-  ventCoolant: move({
+  analyze: move({
+    id: "analyze",
+    name: "Analyze",
+    description: "Analyze the battlefield for improved performance.",
+    heat: 30,
+    log: "{me} analyzes and becomes empowered",
+    supply: 0,
+    once: function (me, world, targets) {
+      me.addStatusEffect(empowered, 2);
+    },
+    targeted: false,
+    validTarget: function (me, world, target) {
+      return !me.hasStatusEffect(empowered);
+    },
+    time: 1,
+  }),
+  
+  rocket: move({
+    id: "rocket",
+    name: "Rocket",
+    damage: 10,
+    description: "Deals {damage} kinetic damage to target.",
+    heat: 20,
+    log: "{me} rockets into {target} for {damage} damage",
+    targeted: true,
+    supply: 0,
+    time: 1,
+    type: kineticDamage,
+  }),
+  
+  /*ventCoolant: move({
     id: "ventCoolant",
     name: "Vent coolant",
     description: "Cools self by 100 heat",
@@ -161,68 +262,6 @@ world.moves = {
     log: "{me} vents coolant",
     self: true,
     time: 2,
-  }),
-  
-  laserBlast: move({
-    id: "laserBlast",
-    name: "Laser blast",
-    damage: 20,
-    description: "Deals 20 damage to target.",
-    heat: 10,
-    log: "{me} fires a head-mounted laser blast at {target} for {damage} damage",
-    targeted: true,
-    time: 1,
-    type: laserDamage,
-  }),
-  
-  overchargeShields: move({
-    id: "overchargeShields",
-    name: "Overcharge shields",
-    description: "Increases current shields by 50. Can go above max shields.",
-    heat: 50,
-    log: "{me} overcharges its shields",
-    once: function (me, world, targets) {
-      me.shield += 50;
-    },
-    self: true,
-    time: 2,
-  }),
-  
-  slash: move({
-    id: "slash",
-    name: "Slash",
-    damage: 30,
-    description: "Deals {damage} damage to target.",
-    log: "{me} hits {target} with a sword for {damage} damage",
-    targeted: true,
-    time: 2,
-    type: physicalDamage,
-  }),
-  
-  railgun: move({
-    id: "railgun",
-    name: "Railgun",
-    damage: 50,
-    description: "Deals {damage} damage to target.",
-    heat: 30,
-    log: "{me} shoots {target} with a railgun for {damage} damage",
-    supply: 10,
-    targeted: true,
-    time: 2,
-    type: armourPiercingDamage,
-  }),
-  
-  burn: move({
-    id: "burn",
-    name: "Burn",
-    damage: 20,
-    description: "Deals {damage} damage to each target.",
-    heat: 20,
-    log: "{me} burns {targets} with a flamethrower for {damage} damage",
-    supply: 10,
-    targeted: false,
-    time: 2,
-    type: fireDamage,
   }),
   
   revive: move({
@@ -240,97 +279,230 @@ world.moves = {
     validTarget: function (me, world, target) {
       return target.isDestroyed();
     },
-  }),
+  }),*/
   
-  refuel: move({
-    id: "refuel",
-    name: "Refuel",
-    description: "Transfers up to 50 supply.",
-    eachTarget: function (me, world, target) {
-      target.supply = min(target.supply + 50, target.maxSupply());
-    },
-    heat: 30,
-    log: "{me} refuels {target}, transferring 50 supply",
-    supply: 50,
-    targeted: true,
+  resupply: move({
+    id: "resupply",
+    name: "Resupply",
+    description: "Scavenge for supply.",
+    heat: 0,
+    log: "{me} resupplies and gains 1 supply",
+    supply: -1,
+    targeted: false,
     time: 1,
   })
 };
 
 world.components = {
-  coolingVents: component({
-    name: "Cooling vents",
-    description: "Keep your cool when others are losing theirs",
+  armouredHead: component({
+    name: "Armoured head",
+    description: "Keeps your CPU intact",
+    integrity: 20,
+    armour: 5,
+    heat: 20,
     icon: "buttons_part_head",
+    slot: world.slot.head,
+  }),
+  
+  ventedHead: component({
+    name: "Vented head",
+    description: "Keep a cool head!",
+    integrity: 10,
+    heat: 20,
     heatSink: 10,
-    moves: [world.moves.ventCoolant],
-    slot: world.slot.head,
-  }),
-  
-  headLaser: component({
-    name: "Head mounted laser",
-    description: "Where's the frickin' shark?",
     icon: "buttons_part_head",
-    moves: [world.moves.laserBlast],
     slot: world.slot.head,
   }),
   
-  fuelTank: component({
-    name: "Fuel tank",
-    description: "Now where are you going to keep your lighter?",
+  tacticalHead: component({
+    name: "Tactical head",
+    description: "Analzye the battlefield",
+    integrity: 10,
+    heat: 10,
+    moves: [world.moves.analyze],
+    icon: "buttons_part_head",
+    slot: world.slot.head,
+  }),
+  
+  lightTorso: component({
+    name: "Light torso",
+    description: "Light and nimble",
     icon: "buttons_part_torso",
-    supply: 100,
+    integrity: 40,
+    armour: 0,
+    heat: 40,
+    heatSink: 20,
+    supply: 20,
+    speed: 100,
     slot: world.slot.torso,
   }),
-
-  shieldBooster: component({
-    name: "Shield booster",
-    description: "For those who take personal space very seriously.",
+  
+  heavyTorso: component({
+    name: "Heavy torso",
+    description: "Heavy but well-padded",
     icon: "buttons_part_torso",
-    moves: [world.moves.overchargeShields],
-    shield: 50,
-    shieldRecharge: 10,
+    integrity: 50,
+    armour: 10,
+    heat: 50,
+    heatSink: 10,
+    supply: 20,
+    speed: 0,
     slot: world.slot.torso,
   }),
-
-  sword: component({
-    name: "Sword",
+  
+  ventedTorso: component({
+    name: "Vented torso",
+    description: "Keeps you cool, but unprotected",
+    icon: "buttons_part_torso",
+    integrity: 30,
+    armour: 0,
+    heat: 60,
+    heatSink: 30,
+    supply: 20,
+    speed: 60,
+    slot: world.slot.torso,
+  }),
+  
+  supportTorso: component({
+    name: "Support torso",
+    description: "Carry plenty of supply",
+    icon: "buttons_part_torso",
+    integrity: 40,
+    armour: 0,
+    heat: 30,
+    heatSink: 20,
+    supply: 40,
+    speed: 30,
+    slot: world.slot.torso,
+  }),
+  
+  energyBlade: component({
+    name: "Energy blade",
     description: "Sharper than a new three-piece suit.",
     icon: "buttons_part_left_arm",
     moves: [world.moves.slash],
     slot: world.slot.arm,
   }),
-
-  railgun:component({
-    name: "Railgun",
-    description: "Always keep a supply of skewers handy.",
+  
+  chainGun: component({
+    name: "Chain gun",
+    description: "Bring plenty of ammo!",
     icon: "buttons_part_left_arm",
-    moves: [world.moves.railgun],
+    moves: [world.moves.chainGun],
     slot: world.slot.arm,
   }),
-
+  
+  railGun: component({
+    name: "Rail gun",
+    description: "Generates a lot of heat...",
+    icon: "buttons_part_left_arm",
+    moves: [world.moves.railGun],
+    slot: world.slot.arm,
+  }),
+  
+  laserCannon: component({
+    name: "Laser cannon",
+    description: "Good against shields",
+    icon: "buttons_part_left_arm",
+    moves: [world.moves.laserCannon],
+    slot: world.slot.arm,
+  }),
+  
   flamethrower: component({
     name: "Flamethrower",
-    description: "He asked you to keep his seat warm...",
+    description: "Keep them nice and toasty",
     icon: "buttons_part_left_arm",
-    moves: [world.moves.burn],
+    moves: [world.moves.flamethrower],
     slot: world.slot.arm,
   }),
-
-  wrench: component({
-    name: "Wrench",
-    description: "All robots know to just Fonzie it.",
+  
+  acidSoaker: component({
+    name: "Acid soaker",
+    description: "Gets more than just the stains out",
     icon: "buttons_part_left_arm",
-    moves: [world.moves.repair, world.moves.revive],
+    moves: [world.moves.acidSoaker],
     slot: world.slot.arm,
   }),
-
-  fuelhose: component({
-    name: "Fuel hose",
-    description: "Or are you just glad to see me?",
+  
+  repairArm: component({
+    name: "Repair arm",
+    description: "Don't leave it at home!",
     icon: "buttons_part_left_arm",
-    moves: [world.moves.refuel],
+    moves: [world.moves.repair],
     slot: world.slot.arm,
+  }),
+  
+  shieldArm: component({
+    name: "Shield arm",
+    description: "For those who take personal space very seriously.",
+    icon: "buttons_part_left_arm",
+    moves: [world.moves.overcharge],
+    shield: 40,
+    shieldRecharge: 10,
+    slot: world.slot.arm,
+  }),
+  
+  armouredLegs: component({
+    name: "Armoured legs",
+    description: "Don't take an arrow to the knee",
+    integrity: 20,
+    armour: 5,
+    heat: 20,
+    icon: "buttons_part_legs",
+    slot: world.slot.legs,
+  }),
+  
+  ventedLegs: component({
+    name: "Vented legs",
+    description: "Nice and breezy, like a kilt",
+    integrity: 10,
+    heat: 20,
+    heatSink: 10,
+    icon: "buttons_part_legs",
+    slot: world.slot.legs,
+  }),
+  
+  rocketLegs: component({
+    name: "Rocket legs",
+    description: "Hands full? Just rocket in to them!",
+    integrity: 20,
+    heat: 10,
+    moves: [world.moves.rocket],
+    icon: "buttons_part_legs",
+    slot: world.slot.legs,
+  }),
+
+  armouredPlating: component({
+    name: "Armoured plating",
+    description: "Heavy, but durable",
+    armour: 5,
+    icon: "buttons_part_accessory",
+    slot: world.slot.accessory,
+  }),
+  
+  thickPlating: component({
+    name: "Thick plating",
+    description: "Might not be all that's thick",
+    integrity: 20,
+    icon: "buttons_part_accessory",
+    slot: world.slot.accessory,
+  }),
+  
+  shieldBooster: component({
+    name: "Shield booster",
+    description: "Works alone, but try combining it",
+    shield: 10,
+    shieldRecharge: 5,
+    icon: "buttons_part_accessory",
+    slot: world.slot.accessory,
+  }),
+  
+  ammoBox: component({
+    name: "Ammo box",
+    description: "Holds bullets and spare parts",
+    supply: 20,
+    icon: "buttons_part_accessory",
+    slot: world.slot.accessory,
   })
 };
 
@@ -381,7 +553,7 @@ world.behaviours.goblin = behaviour({
         log: "{me} stabs {target} with its dagger for {damage} damage",
         targeted: true,
         time: 1,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -406,7 +578,7 @@ world.behaviours.gnoll = behaviour({
         log: "{me} stabs {target} with its spear for {damage} damage",
         targeted: true,
         time: 2,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -431,7 +603,7 @@ world.behaviours.ogre = behaviour({
         log: "{me} clubs {target} for {damage} damage",
         targeted: true,
         time: 2,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -458,7 +630,7 @@ world.behaviours.owlbear = behaviour({
         log: "{me} bites {target} for {damage} damage",
         targeted: true,
         time: 1,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -472,7 +644,7 @@ world.behaviours.owlbear = behaviour({
         log: "{me} claws {target} for {damage} damage",
         targeted: true,
         time: 1,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -486,7 +658,6 @@ world.blueprints.troll = blueprint({
     shieldRecharge: 20,
     heat: 50,
     heatSink: 5,
-    statusEffects: [fireVulnerability],
 });
 world.behaviours.troll = behaviour({
   triggers: [
@@ -500,7 +671,7 @@ world.behaviours.troll = behaviour({
         log: "{me} clubs {target} for {damage} damage",
         targeted: true,
         time: 3,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -532,7 +703,7 @@ world.behaviours.gelatinouscube = behaviour({
                 targeted: true,
                 damage: 5,
                 time: 0,
-                type: acidDamage,
+                type: chemicalDamage,
               });
               target.damage(m.damage, me, m);
             },
@@ -559,7 +730,7 @@ world.behaviours.gelatinouscube = behaviour({
         log: "{me} strikes {target} for {damage} acid damage",
         targeted: true,
         time: 2,
-        type: acidDamage,
+        type: chemicalDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -588,7 +759,7 @@ world.behaviours.dragon = behaviour({
         log: "{me} breathes fire on {targets} for {damage} damage",
         targeted: false,
         time: 3,
-        type: fireDamage,
+        type: thermalDamage,
       }),
       targets: world.targets.foeAny,
     }),
@@ -602,7 +773,7 @@ world.behaviours.dragon = behaviour({
         log: "{me} bites {target} for {damage} damage",
         targeted: true,
         time: 1,
-        type: physicalDamage,
+        type: kineticDamage,
       }),
       targets: world.targets.foeLeastIntegrity,
     }),
@@ -615,7 +786,6 @@ game.state.add("menu", menuState);
 game.state.add("blueprint", blueprintState);
 game.state.add("behaviour", behaviourState);
 game.state.add("battle", battleState);
-// game.state.add("battleReport", battleReportState);
-// game.state.add("campaignReport", campaignReportState);
+game.state.add("battleReport", battleReportState);
 
 game.state.start("load");

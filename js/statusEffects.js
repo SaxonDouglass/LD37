@@ -109,7 +109,7 @@ var vulnerable = statusEffect({
 });
 
 // Recieve double damage for fire
-var fireVulnerability = statusEffect({
+/*var fireVulnerability = statusEffect({
   name: "Vulnerable to fire",
   damageMe: function(me, them, move, shieldDamage, residualDamage) {
     if (move.type.isType(fireDamage)) {
@@ -121,4 +121,4 @@ var fireVulnerability = statusEffect({
     }
     return [shieldDamage, residualDamage];
   },
-});
+});*/
