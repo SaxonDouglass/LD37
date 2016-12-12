@@ -51,7 +51,6 @@ var logger = function (spec) {
     contents = contents.replace(/(#[a-fA-F0-9]{6}){([^}]+)}/g, function(match, p0, p1, offset) {
       that.text.addColor(p0, offset);
       that.text.addColor("#ffffff", offset + p1.length);
-      console.log(match + ", " + p0 + ", " + p1 + ", " + offset);
       return p1;
     });
     that.text.setText(contents);
@@ -61,75 +60,10 @@ var logger = function (spec) {
 };
 var log = null;
 
-var world = {
-  actors: [],
-  tick: 0
-};
-
 var battleState = {
   create: function () {
     log = logger({x: game.width - 800, y: game.height - 288});
     game.add.existing(log);
-    
-    world.actors.push(robot({
-      name: "Robot",
-      behaviour: behaviour({
-        triggers: [
-          trigger({
-            condition: compareCondition({
-              property: "integrity",
-              value: 50,
-              lessThan: true
-            }),
-            targets: target({
-              allies: true,
-            }),
-            action: move({
-              name: "Repair",
-              description: "Repairs up to {repair} integrity damage.",
-              heat: 10,
-              log: "{me} repairs {target} for {repair} integrity",
-              repair: 50,
-              supply: 10,
-              targeted: true,
-              time: 2,
-              validTarget: function (me, world, target) {
-                return !target.isDestroyed() && target.integrity < target.maxIntegrity();
-              },
-            })
-          }),
-          trigger({
-            condition: condition({}),
-            targets: sortedTarget({
-              allies: false,
-              property: "integrity",
-              lowest: true,
-            }),
-            action: move({
-              name: "Punch",
-              damage: 50,
-              description: "Deals {damage} damage to target.",
-              heat: 30,
-              log: "{me} punches {target} for {damage} damage",
-              targeted: true,
-              supply: 1,
-              time: 1,
-              type: physicalDamage,
-            })
-          }),
-          
-        ]
-      }),
-      blueprint: blueprint({
-        integrity: 100,
-        heat: 100,
-        heatSink: 10,
-        shield: 100,
-        shieldRecharge: 10,
-        supply: 100,
-        armour: 5
-      }),
-    }));
     
     world.actors.push(monster({
       name: "Monster",

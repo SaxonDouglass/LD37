@@ -193,17 +193,14 @@ var blueprintState = {
     
     // OK button bottom right
     this.button_ok = game.add.button(
-      game.width - 224, game.height - 92,
-      'buttons_ok', this.onButtonOk, this
+      game.width - 224, game.height - 92, 'buttons_ok', function () {
+        game.state.start("menu");
+      }, this
     );
   },
   
   update: function () {
     
-  },
-  
-  onButtonOk: function () {
-    game.state.start("menu");
   },
   
   onButtonTab: function () {

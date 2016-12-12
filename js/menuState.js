@@ -21,6 +21,9 @@ var menuState = {
     this.group_items.add(menuButton({
       name: "Blueprints", state: "blueprint"
     }));
+    this.group_items.add(menuButton({
+      name: "Behaviours", state: "behaviour"
+    }));
     
     this.group_items.align(1, -1, 768, 192, Phaser.CENTER);
     this.group_items.x = (game.width - this.group_items.width) / 2;

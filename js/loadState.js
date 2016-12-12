@@ -10,6 +10,9 @@ var loadState = {
     game.load.image("stats_bar_frame", "assets/stats_bar_frame.png");
     
     game.load.image("buttons_ok", "assets/buttons/ok.png");
+    game.load.image("buttons_behaviour_condition", "assets/buttons/behaviour_condition.png");
+    game.load.image("buttons_behaviour_action", "assets/buttons/behaviour_action.png");
+    game.load.image("buttons_behaviour_target", "assets/buttons/behaviour_target.png");
     game.load.image("buttons_part_head", "assets/buttons/part_head.png");
     game.load.image("buttons_part_torso", "assets/buttons/part_torso.png");
     game.load.image("buttons_part_left_arm", "assets/buttons/part_left_arm.png");
@@ -23,6 +26,31 @@ var loadState = {
   },
   
   create: function () {
+    // Setup robots
+    world.actors.push(robot({
+      name: "Alpha",
+      behaviour: behaviour({
+        triggers: []
+      }),
+      blueprint: world.blueprints.alpha
+    }));
+    
+    world.actors.push(robot({
+      name: "Epsilon",
+      behaviour: behaviour({
+        triggers: []
+      }),
+      blueprint: world.blueprints.epsilon
+    }));
+    
+    world.actors.push(robot({
+      name: "Omega",
+      behaviour: behaviour({
+        triggers: []
+      }),
+      blueprint: world.blueprints.omega
+    }));
+    
     game.state.start("menu");
   }
 };
