@@ -64,13 +64,101 @@ world.conditions = {
     self: true,
   }),
   
+  integrityLT10: compareCondition({
+    id: "integrityLT10",
+    name: "Integrity < 10",
+    property: "integrity",
+    value: 10,
+    lessThan: true
+  }),
+
   integrityLT50: compareCondition({
     id: "integrityLT50",
     name: "Integrity < 50",
     property: "integrity",
     value: 50,
     lessThan: true
-  })
+  }),
+
+  integrityLT90: compareCondition({
+    id: "integrityLT90",
+    name: "Integrity < 90",
+    property: "integrity",
+    value: 90,
+    lessThan: true
+  }),
+
+  integrityGT10: compareCondition({
+    id: "integrityGT10",
+    name: "Integrity > 10",
+    property: "integrity",
+    value: 10,
+    lessThan: false
+  }),
+
+  integrityGT50: compareCondition({
+    id: "integrityGT50",
+    name: "Integrity > 50",
+    property: "integrity",
+    value: 50,
+    lessThan: false
+  }),
+
+  integrityGT90: compareCondition({
+    id: "integrityGT90",
+    name: "Integrity > 90",
+    property: "integrity",
+    value: 90,
+    lessThan: false
+  }),
+  
+  shieldLT10: compareCondition({
+    id: "shieldLT10",
+    name: "Shield < 10",
+    property: "shield",
+    value: 10,
+    lessThan: true
+  }),
+
+  shieldLT50: compareCondition({
+    id: "shieldLT50",
+    name: "Shield < 50",
+    property: "shield",
+    value: 50,
+    lessThan: true
+  }),
+
+  shieldLT90: compareCondition({
+    id: "shieldLT90",
+    name: "Shield < 90",
+    property: "shield",
+    value: 90,
+    lessThan: true
+  }),
+
+  shieldGT10: compareCondition({
+    id: "shieldGT10",
+    name: "Shield > 10",
+    property: "shield",
+    value: 10,
+    lessThan: false
+  }),
+
+  shieldGT50: compareCondition({
+    id: "shieldGT50",
+    name: "Shield > 50",
+    property: "shield",
+    value: 50,
+    lessThan: false
+  }),
+
+  shieldGT90: compareCondition({
+    id: "shieldGT90",
+    name: "Shield > 90",
+    property: "shield",
+    value: 90,
+    lessThan: false
+  }),
 };
 
 world.targets = {
@@ -80,6 +168,70 @@ world.targets = {
     allies: true
   }),
   
+  allyLeastIntegrity: sortedTarget({
+    id: "allyLeastIntegrity",
+    name: "Ally: least integrity",
+    allies: true,
+    property: "integrity",
+    lowest: true,
+  }),
+  
+  allyMostIntegrity: sortedTarget({
+    id: "allyMostIntegrity",
+    name: "Ally: most integrity",
+    allies: true,
+    property: "integrity",
+    lowest: false,
+  }),
+
+  allyLeastShield: sortedTarget({
+    id: "allyLeastShield",
+    name: "Ally: least shield",
+    allies: true,
+    property: "shield",
+    lowest: true,
+  }),
+  
+  allyMostShield: sortedTarget({
+    id: "allyMostShield",
+    name: "Ally: most shield",
+    allies: true,
+    property: "shield",
+    lowest: false,
+  }),
+
+  allyLeastSupply: sortedTarget({
+    id: "allyLeastSupply",
+    name: "Ally: least supply",
+    allies: true,
+    property: "supply",
+    lowest: true,
+  }),
+  
+  allyMostSupply: sortedTarget({
+    id: "allyMostSupply",
+    name: "Ally: most supply",
+    allies: true,
+    property: "supply",
+    lowest: false,
+  }),
+
+  allyLeastHeat: sortedTarget({
+    id: "allyLeastHeat",
+    name: "Ally: least heat",
+    allies: true,
+    property: "heat",
+    lowest: true,
+  }),
+  
+  allyMostHeat: sortedTarget({
+    id: "allyMostHeat",
+    name: "Ally: most heat",
+    allies: true,
+    property: "heat",
+    lowest: false,
+  }),
+
   foeAny: target({
     id: "foeAny",
     name: "Foe: any",
@@ -99,6 +251,54 @@ world.targets = {
     name: "Foe: most integrity",
     allies: false,
     property: "integrity",
+    lowest: false,
+  }),
+
+  foeLeastShield: sortedTarget({
+    id: "foeLeastShield",
+    name: "Foe: least shield",
+    allies: false,
+    property: "shield",
+    lowest: true,
+  }),
+  
+  foeMostShield: sortedTarget({
+    id: "foeMostShield",
+    name: "Foe: most shield",
+    allies: false,
+    property: "shield",
+    lowest: false,
+  }),
+
+  foeLeastSupply: sortedTarget({
+    id: "foeLeastSupply",
+    name: "Foe: least supply",
+    allies: false,
+    property: "supply",
+    lowest: true,
+  }),
+  
+  foeMostSupply: sortedTarget({
+    id: "foeMostSupply",
+    name: "Foe: most supply",
+    allies: false,
+    property: "supply",
+    lowest: false,
+  }),
+
+  foeLeastHeat: sortedTarget({
+    id: "foeLeastHeat",
+    name: "Foe: least heat",
+    allies: false,
+    property: "heat",
+    lowest: true,
+  }),
+  
+  foeMostHeat: sortedTarget({
+    id: "foeMostHeat",
+    name: "Foe: most heat",
+    allies: false,
+    property: "heat",
     lowest: false,
   }),
 };
