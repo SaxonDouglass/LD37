@@ -35,10 +35,10 @@ var statsPanel = function (spec) {
       actor: actor
     }));
   }
-  that.align(-1, 1, 400, 64);
+  that.align(-1, 2, 400, 64 - 16);
   
   let style = { font: "32px monospace", fill: "#FFFFFF" };
-  let label = game.make.text(1600, -16, actor.name, style);
+  let label = game.make.text(816, 12, actor.name, style);
   that.addChild(label);
   
   that.update = function () {
@@ -113,7 +113,7 @@ var encounter, encounters, dungeonComplete = false;
 
 var battleState = {
   create: function () {
-    log = logger({x: game.width - 800, y: game.height - 288});
+    log = logger({x: game.width - 800, y: 32});
     game.add.existing(log);
 
     encounters = [
@@ -125,7 +125,7 @@ var battleState = {
       { "gelatinouscube": 1, },
       { "troll": 1, "goblin": 1, },
       { "owlbear": 1, "gnoll": 1, },
-      { "goblin": 3, "gnoll": 2, },
+      { "goblin": 3, "ogre": 1, },
       { "dragon": 1, },
     ];
 
@@ -209,7 +209,7 @@ var battleState = {
         world.actors.push(robot);
       }
       stat_bars.destroy(); stat_bars = game.add.group();
-      stat_bars.x = 16; stat_bars.y = 64;
+      stat_bars.x = 16; stat_bars.y = 48;
       
       encounter++;
       world.stats.encounterLast = encounter;
@@ -253,7 +253,7 @@ var battleState = {
             }));
           }
         }
-        stat_bars.align(1, -1, 1920, 64);
+        stat_bars.align(1, -1, 1920 - 800, 128 + 16);
         
         return true;
       } else {
