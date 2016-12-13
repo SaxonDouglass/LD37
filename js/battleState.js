@@ -1,4 +1,55 @@
 
+var stat_bars;
+
+var statBar = function (spec) {
+  var that = game.make.sprite(0, 0, "stats_bar_fill");
+  
+  let maxWidth = that.width;
+  let cropRect = new Phaser.Rectangle(0, 0, that.width, that.height);
+  that.tint = spec.stat.tint;
+  
+  that.update = function () {
+    let val = spec.actor[spec.stat.stat];
+    cropRect.width = maxWidth * (val / spec.stat.cap);
+    that.crop(cropRect);
+  };
+  
+  let frame = game.make.sprite(0, 0, "stats_bar_frame");
+  that.addChild(frame);
+  
+  let style = { font: "20px monospace", fill: "#FFFFFF" };
+  let label = game.make.text(0, -24, spec.stat.name, style);
+  that.addChild(label);
+  
+  return that;
+};
+
+var statsPanel = function (spec) {
+  var that = game.add.group();
+  
+  let actor = world.actors[spec.actor];
+  
+  for (let stat of spec.stats) {
+    that.add(statBar({
+      stat: stat,
+      actor: actor
+    }));
+  }
+  that.align(-1, 1, 400, 64);
+  
+  let style = { font: "32px monospace", fill: "#FFFFFF" };
+  let label = game.make.text(1600, -16, actor.name, style);
+  that.addChild(label);
+  
+  that.update = function () {
+    for (let child of that.children) {
+      child.update();
+    }
+  };
+  
+  return that;
+}
+
 var logger = function (spec) {
   var that = game.make.group();
   that.x = spec.x; that.y = spec.y;
@@ -103,6 +154,9 @@ var battleState = {
         blueprint: world.blueprints.omega,
       })
     ];
+    
+    // Stat bars - created in encounter
+    stat_bars = game.add.group();
 
     world.haveWon = function () {
       for (let actor of world.actors) {
@@ -129,9 +183,11 @@ var battleState = {
         robot.rest();
         world.actors.push(robot);
       }
-
-      world.stats.encounterLast = encounter;
+      stat_bars.destroy(); stat_bars = game.add.group();
+      stat_bars.x = 16; stat_bars.y = 64;
+      
       encounter++;
+      world.stats.encounterLast = encounter;
       if (encounter < encounters.length) {
         for (let property in encounters[encounter]) {
           if (encounters[encounter].hasOwnProperty(property)) {
@@ -157,6 +213,23 @@ var battleState = {
             }
           }
         }
+        
+        // Create stat bars
+        for (let actor in world.actors) {
+          if (world.actors.hasOwnProperty(actor)) {
+            stat_bars.add(statsPanel({
+              actor: actor,
+              stats: [
+                {name: "Integrity", stat: "integrity", tint: 0xCCFFAA, cap: 150 },
+                {name: "Shield", stat: "shield", tint: 0xCCAAFF, cap: 50 },
+                {name: "Heat", stat: "heat", tint: 0xFFCCAA, cap: 100 },
+                {name: "Supply", stat: "supply", tint: 0xAAAAAA, cap: 50 }
+              ]
+            }));
+          }
+        }
+        stat_bars.align(1, -1, 1920, 64);
+        
         return true;
       } else {
         log.print("You win!");
@@ -179,6 +252,10 @@ var battleState = {
       actor.update(world.tick);
     }
     world.tick++;
+    
+    for (let sp of stat_bars.children) {
+      sp.update();
+    }
 
     if (world.haveWon()) {
       log.print("Monsters defeated!");
