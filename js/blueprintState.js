@@ -195,7 +195,11 @@ var blueprintState = {
         slotIndex: spec.slotIndex
       }));
     }
-    that.align(1, -1, 768, 192, Phaser.CENTER);
+    if (spec.items.length > 4) {
+      that.align(2, -1, 768, 192, Phaser.CENTER);
+    } else {
+      that.align(1, -1, 768, 192, Phaser.CENTER);
+    }
     that.x = 224;
     that.y = 128;
     
