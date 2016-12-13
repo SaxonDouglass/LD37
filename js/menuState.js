@@ -16,13 +16,13 @@ var menuState = {
     this.group_items = game.add.group();
     
     this.group_items.add(menuButton({
-      name: "Battle", state: "battle"
-    }));
-    this.group_items.add(menuButton({
       name: "Blueprints", state: "blueprint"
     }));
     this.group_items.add(menuButton({
       name: "Behaviours", state: "behaviour"
+    }));
+    this.group_items.add(menuButton({
+      name: "Battle", state: "battle"
     }));
     
     this.group_items.align(1, -1, 768, 192, Phaser.CENTER);
