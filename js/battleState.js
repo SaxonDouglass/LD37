@@ -104,6 +104,7 @@ var logger = function (spec) {
       return p1;
     });
     that.text.setText(contents);
+    that.text.x = 8;
     that.text.y = that.background.height - that.text.height;
   };
   return that;
@@ -295,6 +296,7 @@ var battleState = {
 
     if (world.haveWon()) {
       log.print("Monsters defeated!");
+      log.print("");
       log.print("After resting briefly, the robots enter the next room")
       this.lastTime += 2*this.tickTime + 1;
       if(!world.loadNextEncounter()) {
