@@ -254,7 +254,7 @@ var battleState = {
             }));
           }
         }
-        stat_bars.align(1, -1, 1920 - 800, 128 + 16);
+        stat_bars.align(1, -1, 1920 - 800, 128 + 12);
         
         return true;
       } else {
