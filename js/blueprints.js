@@ -5,7 +5,8 @@ var blueprint = function (spec) {
   that.armour = spec.armour || 0;
   that.heat = spec.heat || 0;
   that.heatSink = spec.heatSink || 0;
-  that.integrity = spec.integrity | 0;
+  that.integrity = spec.integrity || 0;
+  that.moves = spec.moves || [];
   that.shield = spec.shield || 0;
   that.shieldRecharge = spec.shieldRecharge || 0;
   that.speed = spec.speed || 0;
@@ -14,6 +15,10 @@ var blueprint = function (spec) {
 
   that.update = function (robot) {
     return that;
+  };
+
+  that.hasMove = function (move) {
+    return that.moves.indexOf(move) >= 0;
   };
 
   return that;
@@ -206,6 +211,20 @@ var robotBlueprint = function (spec) {
   that.speed = spec.speed || spec.chassis.speed;
   that.supply = that.supply || spec.chassis.supply;
   
+  that.hasMove = function (move) {
+    if (move === world.moves.bash) {
+      return true;
+    }
+    for (let component of that.components) {
+      if (component !== null) {
+        if (component.moves.indexOf(move) >= 0) {
+         return true;
+        }
+      }
+    }
+    return false;
+  };
+
   that.setComponent = function (idx, component) {
     if (that.components[idx] != undefined &&
         that.components[idx].slot !== spec.chassis.slots[idx]) {
