@@ -21,12 +21,13 @@ world.chassis = {
   basic: chassis({
     name: "Basic chassis",
     armor: 0,
-    heat: 100,
-    heatSink: 20,
-    integrity: 100,
-    shield: 50,
-    shieldRecharge: 10,
-    speed: 20,
+    heat: 0,
+    heatSink: 0,
+    integrity: 0,
+    shield: 0,
+    shieldRecharge: 0,
+    supply: 0,
+    speed: 0,
     slots: [
       world.slot.head,
       world.slot.torso,
@@ -36,7 +37,6 @@ world.chassis = {
       world.slot.accessory,
       world.slot.accessory
     ],
-    supply: 100,
   })
 };
 
@@ -371,7 +371,7 @@ world.components = {
     armour: 0,
     heat: 30,
     heatSink: 20,
-    supply: 40,
+    supply: 30,
     speed: 30,
     slot: world.slot.torso,
   }),
@@ -437,7 +437,7 @@ world.components = {
     description: "For those who take personal space very seriously.",
     icon: "buttons_part_left_arm",
     moves: [world.moves.overcharge],
-    shield: 40,
+    shield: 30,
     shieldRecharge: 10,
     slot: world.slot.arm,
   }),
@@ -483,7 +483,7 @@ world.components = {
   thickPlating: component({
     name: "Thick plating",
     description: "Might not be all that's thick",
-    integrity: 20,
+    integrity: 30,
     icon: "buttons_part_accessory",
     slot: world.slot.accessory,
   }),
@@ -500,7 +500,7 @@ world.components = {
   ammoBox: component({
     name: "Ammo box",
     description: "Holds bullets and spare parts",
-    supply: 20,
+    supply: 10,
     icon: "buttons_part_accessory",
     slot: world.slot.accessory,
   })

@@ -3,14 +3,14 @@ var blueprint = function (spec) {
   
   that.name = spec.name;
   that.armour = spec.armour || 0;
-  that.heat = spec.heat || 100;
+  that.heat = spec.heat || 0;
   that.heatSink = spec.heatSink || 0;
-  that.integrity = spec.integrity | 100;
+  that.integrity = spec.integrity | 0;
   that.shield = spec.shield || 0;
   that.shieldRecharge = spec.shieldRecharge || 0;
   that.speed = spec.speed || 0;
   that.statusEffects = spec.statusEffects || [];
-  that.supply = spec.supply || 50;
+  that.supply = spec.supply || 0;
 
   that.update = function (robot) {
     return that;
@@ -31,9 +31,9 @@ var chassis = function (spec) {
   var that = {};
 
   that.armour = spec.armour || 0;
-  that.heat = spec.heat || 100;
+  that.heat = spec.heat || 0;
   that.heatSink = spec.heatSink || 0;
-  that.integrity = spec.integrity || 100;
+  that.integrity = spec.integrity || 0;
   that.shield = spec.shield || 0;
   that.shieldRecharge = spec.shieldRecharge || 0;
   that.slots = spec.slots || [];
@@ -55,7 +55,7 @@ var component = function (spec) {
   that.description = spec.description || "Generic description";
   that.icon = spec.icon || "";
   that.shield = spec.shield || 0;
-  that.shieldRecharge = spec.shieldRecharge || 2;
+  that.shieldRecharge = spec.shieldRecharge || 0;
   that.slot = spec.slot;
   that.speed = spec.speed || 0;
   that.supply = spec.supply || 0;
@@ -197,6 +197,7 @@ var robotBlueprint = function (spec) {
 
   that.armour = that.armour || spec.chassis.armour;
   that.components = new Array(spec.chassis.slots.length).fill(null);
+  that.moves = [];
   that.heat = that.heat || spec.chassis.heat;
   that.heatSink = that.heatSink || spec.chassis.heatSink;
   that.integrity = that.integrity || spec.chassis.integrity;
@@ -229,8 +230,17 @@ var robotBlueprint = function (spec) {
   }
   
   that.updateComponents = function () {
-    for (let i = 0; i < spec.components.length; i++) {
-      let component = spec.components[i];
+    that.armour = spec.chassis.armour;
+    that.heat = spec.chassis.heat;
+    that.heatSink = spec.chassis.heatSink;
+    that.integrity = spec.chassis.integrity;
+    that.shield = spec.chassis.shield;
+    that.shieldRecharge = spec.chassis.shieldRecharge;
+    that.speed = spec.chassis.speed;
+    that.supply = spec.chassis.supply;
+      
+    for (let i = 0; i < that.components.length; i++) {
+      let component = that.components[i];
       if (component === null) {
         continue
       }
