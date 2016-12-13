@@ -131,7 +131,7 @@ world.moves = {
   }),
   
   chainGun: move({
-    id: "chaingun",
+    id: "chainGun",
     name: "Chain gun",
     damage: 20,
     description: "Deals {damage} kinetic damage to target.",
@@ -144,7 +144,7 @@ world.moves = {
   }),
   
   railGun: move({
-    id: "railgun",
+    id: "railGun",
     name: "Rail gun",
     damage: 40,
     description: "Deals {damage} kinetic damage to target.",
@@ -157,7 +157,7 @@ world.moves = {
   }),
   
   laserCannon: move({
-    id: "lasercannon",
+    id: "laserCannon",
     name: "Laser cannon",
     damage: 20,
     description: "Deals {damage} electromagnetic damage to target.",
@@ -183,7 +183,7 @@ world.moves = {
   }),
   
   acidSoaker: move({
-    id: "acidsoaker",
+    id: "acidSoaker",
     name: "Acid soaker",
     damage: 20,
     description: "Deals {damage} chemical damage to target.",
@@ -238,6 +238,7 @@ world.moves = {
     validTarget: function (me, world, target) {
       return !me.hasStatusEffect(empowered);
     },
+    self: true,
     time: 1,
   }),
   

@@ -8,6 +8,12 @@ var behaviourState = {
       world.behaviours.omega
     ];
     
+    this.blueprints = [
+      world.blueprints.alpha,
+      world.blueprints.epsilon,
+      world.blueprints.omega
+    ];
+    
     this.group_tabs = game.add.group();
     this.group_tabs.add(this.robotTab({
       image: "buttons_tab_alpha", robotIndex: 0}));
@@ -47,7 +53,8 @@ var behaviourState = {
         conditions: conditions,
         moves: moves,
         targets: targets,
-        robot: this.robots[i]
+        robot: this.robots[i],
+        blueprint: this.blueprints[i],
       });
       this.group_lists[i].visible = i === 0;
     }
@@ -113,6 +120,9 @@ var behaviourState = {
     
     let onClick = function () {
       that.move = (that.move + 1) % spec.moves.length;
+      while (!spec.blueprint.hasMove(world.moves[spec.moves[that.move]])) {
+        that.move = (that.move + 1) % spec.moves.length;
+      }
       update();
     };
     
@@ -170,19 +180,22 @@ var behaviourState = {
     that.condition = this.behaviourCondition({
       conditions: spec.conditions,
       robot: spec.robot,
-      trigger: trigger
+      blueprint: spec.blueprint,
+      trigger: trigger,
     });
     that.add(that.condition);
     that.action = this.behaviourAction({
       moves: spec.moves,
       robot: spec.robot,
-      trigger: trigger
+      blueprint: spec.blueprint,
+      trigger: trigger,
     });
     that.add(that.action);
     that.target = this.behaviourTarget({
       targets: spec.targets,
       robot: spec.robot,
-      trigger: trigger
+      blueprint: spec.blueprint,
+      trigger: trigger,
     });
     that.add(that.target);
     
@@ -203,7 +216,8 @@ var behaviourState = {
         conditions: spec.conditions,
         moves: spec.moves,
         targets: spec.targets,
-        robot: spec.robot
+        robot: spec.robot,
+        blueprint: spec.blueprint,
       }));
     }
     that.align(1, -1, 1152, 96, Phaser.CENTER);
