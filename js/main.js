@@ -107,7 +107,7 @@ world.moves = {
   bash: move({
     id: "bash",
     name: "Bash",
-    damage: 5,
+    damage: 10,
     description: "Deals {damage} kinetic damage to target.",
     heat: 0,
     log: "{me} bashes {target} for {damage} damage",
@@ -120,7 +120,7 @@ world.moves = {
   slash: move({
     id: "slash",
     name: "Slash",
-    damage: 10,
+    damage: 20,
     description: "Deals {damage} kinetic damage to target.",
     heat: 10,
     log: "{me} slashes {target} with energy blade for {damage} damage",
@@ -133,7 +133,7 @@ world.moves = {
   chainGun: move({
     id: "chainGun",
     name: "Chain gun",
-    damage: 20,
+    damage: 30,
     description: "Deals {damage} kinetic damage to target.",
     heat: 10,
     log: "{me} shoots {target} with chain gun for {damage} damage",
@@ -146,7 +146,7 @@ world.moves = {
   railGun: move({
     id: "railGun",
     name: "Rail gun",
-    damage: 40,
+    damage: 50,
     description: "Deals {damage} kinetic damage to target.",
     heat: 60,
     log: "{me} shoots {target} with rail gun for {damage} damage",
@@ -159,7 +159,7 @@ world.moves = {
   laserCannon: move({
     id: "laserCannon",
     name: "Laser cannon",
-    damage: 20,
+    damage: 30,
     description: "Deals {damage} electromagnetic damage to target.",
     heat: 50,
     log: "{me} shoots {target} with laser cannon for {damage} damage",
@@ -172,7 +172,7 @@ world.moves = {
   flamethrower: move({
     id: "flamethrower",
     name: "Flamethrower",
-    damage: 20,
+    damage: 30,
     description: "Deals {damage} thermal damage to target.",
     heat: 40,
     log: "{me} shoots {target} with laser cannon for {damage} damage",
@@ -185,7 +185,7 @@ world.moves = {
   acidSoaker: move({
     id: "acidSoaker",
     name: "Acid soaker",
-    damage: 20,
+    damage: 30,
     description: "Deals {damage} chemical damage to target.",
     heat: 30,
     log: "{me} shoots {target} with acid soaker for {damage} damage",
@@ -245,12 +245,15 @@ world.moves = {
   rocket: move({
     id: "rocket",
     name: "Rocket",
-    damage: 10,
+    damage: 30,
     description: "Deals {damage} kinetic damage to target.",
     heat: 20,
     log: "{me} rockets into {target} for {damage} damage",
     targeted: true,
     supply: 0,
+    once: function (me, world, targets) {
+      me.integrity -= 10;
+    },
     time: 1,
     type: kineticDamage,
   }),
