@@ -81,6 +81,7 @@ var battleState = {
     encounter = -1;
     
     dungeonComplete = false;
+    this.button_ok = null;
 
     // Setup robots
     let robots =[
