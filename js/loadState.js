@@ -10,6 +10,9 @@ var loadState = {
     game.load.image("stats_bar_frame", "assets/stats_bar_frame.png");
     
     game.load.image("buttons_ok", "assets/buttons/ok.png");
+    game.load.image("buttons_pause", "assets/buttons/pause.png");
+    game.load.image("buttons_normal_speed", "assets/buttons/normal_speed.png");
+    game.load.image("buttons_fast_forward", "assets/buttons/fast_forward.png");
     game.load.image("buttons_behaviour_condition", "assets/buttons/behaviour_condition.png");
     game.load.image("buttons_behaviour_action", "assets/buttons/behaviour_action.png");
     game.load.image("buttons_behaviour_target", "assets/buttons/behaviour_target.png");

@@ -134,6 +134,31 @@ var battleState = {
     dungeonComplete = false;
     this.button_ok = null;
 
+    this.lastTime = game.time.totalElapsedSeconds();
+
+    this.tickTime = 1.0;
+    this.paused = false;
+
+    let that = this;
+    this.button_pause = game.add.button(
+      28, game.height - 92, 'buttons_pause', function () {
+        that.paused = ! that.paused;
+      }, this
+    );
+    this.button_normal_speed = game.add.button(
+      2*28 + 64, game.height - 92, 'buttons_normal_speed', function () {
+        that.paused = false;
+        that.lastTime = game.time.totalElapsedSeconds();
+        that.tickTime = 1.0;
+      }, this
+    );
+    this.button_fast_forward = game.add.button(
+      3*28 + 2*64, game.height - 92, 'buttons_fast_forward', function () {
+        that.paused = false;
+        that.tickTime = 0.0;
+      }, this
+    );
+
     // Setup robots
     let robots =[
       robot({
@@ -244,6 +269,17 @@ var battleState = {
   update: function () {
     // log.print("tick " + parseInt(world.tick));
     if (this.button_ok) {return;}
+
+    if (this.paused) {
+      this.lastTime = game.time.totalElapsedSeconds();
+      return
+    }
+
+    if (game.time.totalElapsedSeconds() - this.lastTime < this.tickTime) {
+      return;
+    } else {
+      this.lastTime += this.tickTime;
+    }
     
     for (let actor of world.actors) {
       if (actor.isReady(world)) {
@@ -260,6 +296,7 @@ var battleState = {
     if (world.haveWon()) {
       log.print("Monsters defeated!");
       log.print("After resting briefly, the robots enter the next room")
+      this.lastTime += 2*this.tickTime + 1;
       if(!world.loadNextEncounter()) {
         world.stats.win = true;
         dungeonComplete = true;
