@@ -263,6 +263,8 @@ var battleState = {
       }
     };
 
+    this.next_level = false;
+
     log.print("Robots enter the dungeon.");
     world.stats.encounterTotal = encounters.length;
     world.loadNextEncounter();
@@ -281,6 +283,17 @@ var battleState = {
     } else {
       this.lastTime += this.tickTime;
     }
+
+    if (this.next_level) {
+      this.next_level = false;
+      log.print("");
+      log.print("After resting briefly, the robots enter the next room")
+      this.lastTime += 2*this.tickTime + 1;
+      if(!world.loadNextEncounter()) {
+        world.stats.win = true;
+        dungeonComplete = true;
+      }
+    }
     
     for (let actor of world.actors) {
       if (actor.isReady(world)) {
@@ -296,13 +309,7 @@ var battleState = {
 
     if (world.haveWon()) {
       log.print("Monsters defeated!");
-      log.print("");
-      log.print("After resting briefly, the robots enter the next room")
-      this.lastTime += 2*this.tickTime + 1;
-      if(!world.loadNextEncounter()) {
-        world.stats.win = true;
-        dungeonComplete = true;
-      }
+      this.next_level = true;
     } 
 
     if (world.haveLost()) {

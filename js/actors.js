@@ -78,7 +78,7 @@ var actor = function (spec) {
       that.integrity -= residualAmount;
       if (that.isDestroyed()) {
         log.print(that.name + "'s hull destroyed");
-      } else {
+      } else if (residualAmount > 0) {
         log.print(that.name + "'s hull integrity reduced to " + parseFloat(that.integrity * 100.0 / spec.blueprint.integrity).toFixed(1) + "%");
       }
     }
